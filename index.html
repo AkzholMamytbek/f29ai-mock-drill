@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>F29AI Mock Drill: exam-style CodeRunner tasks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f6ff; --card:#ffffff; --ink:#18203a; --soft:#5b6584; --line:#e3e8f5;
+  --p1:#2563eb; --p1l:#e8f0ff;
+  --p2:#7c3aed; --p2l:#f1eaff;
+  --p3:#ea580c; --p3l:#fff0e6;
+  --p4:#059669; --p4l:#e3f8f0;
+  --p5:#e11d48; --p5l:#ffe9ee;
+  --p6:#0891b2; --p6l:#e0f7fb;
+  --ok:#16a34a; --okl:#e6f9ec; --bad:#dc2626; --badl:#fdecec;
+  --tip:#fff7d6; --tipb:#f2c94c; --warn:#ffeceb; --warnb:#ff8a80;
+  --code:#0f172a; --codebg:#f7f9fe;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:17px;line-height:1.6}
+code{font-family:var(--mono);font-size:.88em;background:#eef2fb;border:1px solid #e0e6f5;padding:1px 6px;border-radius:6px;color:#1e2a55}
+b{font-weight:800}
+a{color:inherit}
+
+/* header */
+header{position:sticky;top:0;z-index:30;background:linear-gradient(100deg,#2563eb 0%,#7c3aed 45%,#ea580c 100%);color:#fff;box-shadow:0 4px 18px rgba(37,99,235,.25)}
+.hwrap{display:flex;align-items:center;gap:16px;padding:10px 20px;max-width:1400px;margin:0 auto}
+.logo{font-weight:900;font-size:19px;letter-spacing:.2px;white-space:nowrap}
+.logo span{opacity:.85;font-weight:700}
+.mockchip{opacity:1!important;font-size:11px;font-weight:900;letter-spacing:.8px;background:#fff;color:#e11d48;border-radius:99px;padding:2px 9px;margin-left:6px;vertical-align:2px}
+.mockbanner{background:linear-gradient(100deg,#fff1f3,#fff7e6);border:2px dashed #f59e9e;border-radius:16px;padding:12px 16px;margin:12px 0;font-weight:700}
+details.ref{margin-top:14px;border:1px solid var(--line);border-radius:14px;background:#f7f9fe}
+details.ref summary{cursor:pointer;padding:10px 14px;font-weight:800}
+details.ref pre{margin:0;padding:10px 16px 14px;overflow:auto}
+.prog{flex:1;display:flex;align-items:center;gap:10px;min-width:120px}
+.bar{flex:1;height:12px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#fff;border-radius:99px;transition:width .5s}
+.prog b{white-space:nowrap;font-size:15px}
+.chip{font-size:13px;font-weight:800;padding:4px 10px;border-radius:99px;background:rgba(255,255,255,.2);white-space:nowrap}
+.chip.ready{background:#22c55e}
+.chip.fail{background:#ef4444}
+.menu{display:none;white-space:nowrap;background:rgba(255,255,255,.2);border:0;color:#fff;font:inherit;font-weight:800;border-radius:10px;padding:5px 12px;cursor:pointer}
+
+/* layout */
+.layout{display:flex;max-width:1400px;margin:0 auto;gap:24px;padding:20px}
+nav{width:290px;flex:none;position:sticky;top:76px;align-self:flex-start;max-height:calc(100vh - 96px);overflow:auto;background:var(--card);border-radius:18px;padding:14px;border:1px solid var(--line)}
+nav h4{margin:14px 6px 6px;font-size:13px;text-transform:uppercase;letter-spacing:.8px}
+nav h4:first-child{margin-top:2px}
+nav a{display:flex;justify-content:space-between;gap:8px;text-decoration:none;padding:6px 10px;border-radius:10px;font-size:15px;font-weight:600;color:var(--ink)}
+nav a:hover{background:#f0f3fb}
+nav a small{font-weight:800;color:var(--soft);white-space:nowrap}
+nav a.done small{color:var(--ok)}
+main{flex:1;min-width:0}
+
+.intro{background:var(--card);border-radius:22px;padding:22px 26px;border:1px solid var(--line);margin-bottom:22px}
+.intro h1{margin:0 0 6px;font-size:30px;font-weight:900;line-height:1.2}
+.intro p{margin:8px 0}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.how div{background:#f6f8ff;border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-size:15px}
+.how div b{display:block;font-size:16px}
+
+.parthead{border-radius:22px;padding:18px 24px;color:#fff;margin:34px 0 18px;box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.parthead h2{margin:0;font-size:26px;font-weight:900}
+.parthead p{margin:4px 0 0;opacity:.95}
+
+.lesson{background:var(--card);border-radius:22px;padding:22px 26px;margin-bottom:22px;border:1px solid var(--line);border-top:7px solid var(--pc);scroll-margin-top:84px}
+.lesson h3{margin:0 0 10px;font-size:23px;font-weight:900;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:900;color:var(--pc);background:var(--pcl);padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px}
+.lesson p{margin:10px 0}
+.lesson ul{margin:8px 0 10px;padding-left:24px}
+.lesson li{margin:3px 0}
+
+.tip,.warn{border-radius:14px;padding:10px 16px;margin:14px 0;border-left:6px solid}
+.tip{background:var(--tip);border-color:var(--tipb)}
+.warn{background:var(--warn);border-color:var(--warnb)}
+.tip::before{content:"💡 Tip: ";font-weight:900}
+.warn::before{content:"⚠️ Careful: ";font-weight:900}
+
+pre.hl{margin:0;font-family:var(--mono);font-size:14.5px;line-height:1.55;white-space:pre;color:var(--code)}
+.example{margin:14px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--codebg)}
+.example .src{padding:12px 16px;overflow:auto}
+.example .bar2{display:flex;gap:8px;align-items:center;padding:6px 10px;background:#eef2fb;border-top:1px solid var(--line);flex-wrap:wrap}
+.example .lbl{font-size:12px;font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.6px;margin-right:auto}
+.example .out{display:none;padding:10px 16px;background:#0f172a;color:#d6f5e3;font-family:var(--mono);font-size:14px;white-space:pre-wrap;border-top:1px solid #0b1220}
+.example .out.show{display:block}
+.example .out::before{content:"output";display:block;font-size:11px;color:#8fa3c7;text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+
+.k{color:#7c3aed;font-weight:600}.s{color:#059669}.n{color:#ea580c}.c{color:#8a94ad;font-style:italic}.f{color:#2563eb;font-weight:600}.bi{color:#c026d3}
+
+button.b{font:inherit;font-size:14px;font-weight:800;border:0;border-radius:10px;padding:6px 14px;cursor:pointer;transition:transform .08s,filter .15s}
+button.b:hover{filter:brightness(1.05)}
+button.b:active{transform:scale(.97)}
+.b.check{background:var(--ok);color:#fff;font-size:15px;padding:8px 18px}
+.b.hint{background:#fff3c4;color:#7a5a00}
+.b.sol{background:#ffe1e6;color:#a1123a}
+.b.reset{background:#eef1f8;color:var(--soft)}
+.b.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.b.run{background:var(--p1);color:#fff}
+
+/* exercise */
+.ex{margin:20px 0 8px;border:2px solid var(--pc);border-radius:18px;background:linear-gradient(180deg,var(--pcl),#fff 90px);padding:14px 16px 16px}
+.ex.passed{border-color:var(--ok);background:linear-gradient(180deg,var(--okl),#fff 90px)}
+.exhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.exhead .yt{font-weight:900;color:var(--pc);font-size:14px;text-transform:uppercase;letter-spacing:.6px}
+.ex.passed .exhead .yt{color:var(--ok)}
+.exhead h5{margin:0;font-size:18px;font-family:var(--mono);font-weight:600}
+.badge{margin-left:auto;font-size:13px;font-weight:900;border-radius:99px;padding:3px 10px;background:#eef1f8;color:var(--soft)}
+.ex.passed .badge{background:var(--ok);color:#fff}
+.task{margin:8px 0 10px}
+.editor{position:relative;border:2px solid #d7def0;border-radius:12px;background:#fff;overflow:auto}
+.editor:focus-within{border-color:var(--pc);box-shadow:0 0 0 4px var(--pcl)}
+.editor pre,.editor textarea{margin:0;padding:12px 14px;font-family:var(--mono);font-size:15px;line-height:1.55;white-space:pre;tab-size:4;border:0;min-width:100%;letter-spacing:0}
+.editor pre{position:absolute;inset:0 auto auto 0;pointer-events:none;color:var(--code)}
+.editor textarea{position:relative;display:block;width:100%;resize:none;background:transparent;color:transparent;caret-color:#111;outline:none;overflow:hidden}
+.editor textarea::selection{background:rgba(37,99,235,.25);color:transparent}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.btns .kbd{font-size:12px;color:var(--soft);margin-left:4px}
+.reveal{display:none;margin-top:10px;border-radius:12px;padding:10px 14px}
+.reveal.show{display:block}
+.reveal.h{background:#fff8dc;border:1px solid #f2dc8a}
+.reveal.h::before{font-weight:900;display:block;font-size:13px;color:#7a5a00}
+.reveal.h1::before{content:"Hint 1"}
+.reveal.h2::before{content:"Hint 2"}
+.reveal.solb{background:#fff4f6;border:1px solid #ffc9d4}
+.reveal.solb .t{font-weight:900;font-size:13px;color:#a1123a;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.results{margin-top:12px}
+.sum{font-weight:900;padding:8px 14px;border-radius:12px}
+.sum.ok{background:var(--okl);color:#0f6b31}
+.sum.bad{background:var(--badl);color:#9b1c1c}
+.sum.wait{background:#eef2fb;color:var(--soft)}
+table.t{width:100%;border-collapse:separate;border-spacing:0 6px;margin-top:6px;font-size:14px}
+table.t td{padding:7px 10px;background:#f7f9fe;vertical-align:top}
+table.t td:first-child{border-radius:10px 0 0 10px;width:30px;text-align:center;font-weight:900}
+table.t td:last-child{border-radius:0 10px 10px 0}
+table.t tr.p td{background:#eefbf2}
+table.t tr.f td{background:#fff0f0}
+table.t .m{font-family:var(--mono);font-size:13px;word-break:break-word}
+table.t .lab{font-size:11px;font-weight:900;color:var(--soft);text-transform:uppercase;letter-spacing:.5px}
+.note{margin-top:4px;color:#9b1c1c;font-weight:700;font-size:13.5px}
+.errbox{margin-top:8px;background:#2a0f13;color:#ffd7dc;font-family:var(--mono);font-size:13.5px;white-space:pre-wrap;border-radius:12px;padding:10px 14px}
+.errtip{margin-top:6px;background:var(--tip);border-left:6px solid var(--tipb);border-radius:10px;padding:8px 12px;font-size:15px}
+.stdout{margin-top:8px;background:#0f172a;color:#d6f5e3;font-family:var(--mono);font-size:13.5px;white-space:pre-wrap;border-radius:12px;padding:10px 14px}
+.stdout::before{content:"your print output";display:block;font-size:11px;color:#8fa3c7;text-transform:uppercase;letter-spacing:.8px}
+.party{font-size:15px;margin-top:6px;font-weight:800;color:#0f6b31}
+
+#diag{display:none;position:fixed;top:64px;right:16px;z-index:50;width:min(520px,calc(100vw - 32px));max-height:60vh;overflow:auto;background:#0f172a;color:#d6f5e3;font-family:var(--mono);font-size:12px;border-radius:14px;padding:10px 12px;white-space:pre-wrap;box-shadow:0 18px 50px rgba(15,23,42,.35)}
+#diag.show{display:block}
+.chip{cursor:pointer}
+/* playground */
+.pgbtn{position:fixed;right:20px;bottom:20px;z-index:40;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;border:0;border-radius:99px;padding:12px 20px;font:inherit;font-weight:900;box-shadow:0 8px 24px rgba(37,99,235,.35);cursor:pointer}
+.pg{position:fixed;right:20px;bottom:76px;z-index:41;width:min(560px,calc(100vw - 40px));max-height:calc(100vh - 120px);overflow:auto;background:#fff;border-radius:18px;border:1px solid var(--line);box-shadow:0 18px 50px rgba(15,23,42,.25);padding:14px 16px;display:none}
+.pg.show{display:block}
+.pg h4{margin:0 0 4px;font-size:18px;font-weight:900}
+.pg p{margin:0 0 8px;font-size:14px;color:var(--soft)}
+.pgout{margin-top:10px}
+
+@media (max-width:980px){
+  nav{position:fixed;top:62px;left:10px;right:10px;width:auto;max-height:70vh;z-index:35;display:none;box-shadow:0 18px 50px rgba(15,23,42,.25)}
+  nav.show{display:block}
+  .menu{display:inline-block}
+  .layout{padding:12px}
+  .lesson,.intro{padding:16px}
+  .logo span{display:none}
+}
+@media (max-width:600px){
+  .hwrap{gap:10px;padding:8px 12px}
+  .logo{font-size:16px}
+  .prog b{font-size:13px}
+  .chip{font-size:11px;padding:3px 8px}
+  .chip:not(.ready):not(.fail){display:none}
+  .chip.ready{font-size:0;padding:0;width:12px;height:12px}
+  .lesson h3{font-size:20px}
+  .intro h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<header><div class="hwrap">
+  <button class="menu" id="menu">☰ Lessons</button>
+  <div class="logo">🎯 F29AI Mock Drill <span class="mockchip">MOCK PRACTICE</span></div>
+  <div class="prog"><div class="bar"><i id="barfill"></i></div><b id="progtxt">0 / 0</b></div>
+  <div class="chip" id="pychip" title="Click for details">Python: loading…</div>
+</div></header>
+<div id="diag"></div>
+
+<div class="layout">
+  <nav id="nav"></nav>
+  <main id="main">
+    <section class="intro">
+      <h1>Mock drill: exam-style tasks only 🎯</h1>
+      <div class="mockbanner">⚠️ MOCK PRACTICE ONLY. These are practice tasks written in the style of the F29AI CodeRunner class test (MDPs + RL, <code>transitions[s][a]</code> format). They are not the real test questions.</div>
+      <p><b>63 tasks</b>, grouped by the pattern you need: one action (1 loop), one state (2 loops), the whole MDP (3 loops), lists of states, reward lists, and an exam mix. Each task: read, write, press <b>Check</b>. Hints and the solution open only when you click.</p>
+      <div class="how">
+        <div><b>▶ Check</b>Runs the tests. Shortcut: Ctrl / Cmd + Enter.</div>
+        <div><b>💡 Hints</b>Two per task. Try first!</div>
+        <div><b>👀 Solution</b>Asks twice. Then retype it yourself.</div>
+        <div><b>🧪 Playground</b>Bottom-right: run anything. <code>EX</code>, <code>STUDY</code>, <code>M3</code> exist there.</div>
+        <div><b>💾 Progress</b>Saved in this browser.</div>
+        <div><b>🧠 Before coding</b>Parameters given? → fewer loops. Answer about whole MDP / one state / one action? → where the start value goes.</div>
+      </div>
+      <details class="ref"><summary>📋 The 3 MDPs used in the tests (EX, STUDY, M3), click to open</summary><pre class="hl" id="mdpref"></pre></details>
+    </section>
+    <div id="content"></div>
+  </main>
+</div>
+
+<button class="pgbtn" id="pgbtn">🧪 Playground</button>
+<div class="pg" id="pg">
+  <h4>🧪 Playground</h4>
+  <p>Run any Python. <code>EX</code>, <code>STUDY</code> and <code>M3</code> already exist here. Use <code>print(...)</code> to see values.</p>
+  <div class="editor" id="pgeditor"></div>
+  <div class="btns"><button class="b run" id="pgrun">▶ Run</button><button class="b reset" id="pgclear">Clear</button><span class="kbd">Ctrl / Cmd + Enter</span></div>
+  <div class="pgout" id="pgout"></div>
+</div>
+
+<script id="data" type="application/json">{"lessons": [{"id": "m1-one-action", "part": 1, "title": "One action: transitions[s][a] (1 loop)", "blocks": [{"t": "p", "text": "You get `s` **and** `a`, so you go straight to `transitions[s][a]` and loop over its outcomes. **One loop.**"}, {"t": "code", "code": "for prob, next_state, reward, terminal in transitions[s][a]:\n    ...", "output": ""}, {"t": "ex", "id": "d-sum-probs", "title": "sum_probs(transitions, s, a)", "task": "Return the sum of the probabilities of all outcomes of `(s, a)`.", "starter": "def sum_probs(transitions, s, a):\n    pass\n", "solution": "def sum_probs(transitions, s, a):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        total += prob\n    return total\n", "tests": [{"expr": "sum_probs(EX, 0, 0)", "expected": "1.0"}, {"expr": "sum_probs(M3, 0, 2)", "expected": "1.0"}, {"expr": "sum_probs([[[(0.5, 0, 1.0, False), (0.3, 0, 0.0, True)]]], 0, 0)", "expected": "0.8"}], "hints": ["Accumulator `total = 0.0` before the loop.", "`total += prob` inside the loop, `return total` after it."]}, {"t": "ex", "id": "d-exp-reward", "title": "expected_reward(transitions, s, a)", "task": "Return the expected immediate reward of `(s, a)`: Σ prob × reward.", "starter": "def expected_reward(transitions, s, a):\n    pass\n", "solution": "def expected_reward(transitions, s, a):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        total += prob * reward\n    return total\n", "tests": [{"expr": "expected_reward(STUDY, 1, 0)", "expected": "9.5"}, {"expr": "expected_reward(EX, 0, 0)", "expected": "1.6"}, {"expr": "expected_reward(M3, 0, 0)", "expected": "3.2"}, {"expr": "expected_reward(M3, 0, 2)", "expected": "-0.5"}], "hints": ["Same as `sum_probs` but you add `prob * reward`.", "`total += prob * reward`"]}, {"t": "ex", "id": "d-prob-reach", "title": "prob_to_reach(transitions, s, a, target)", "task": "Return the total probability of landing in state `target` after doing `a` in `s`. Several outcomes may lead to the same state.", "starter": "def prob_to_reach(transitions, s, a, target):\n    pass\n", "solution": "def prob_to_reach(transitions, s, a, target):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if next_state == target:\n            total += prob\n    return total\n", "tests": [{"expr": "prob_to_reach(EX, 0, 0, 1)", "expected": "0.8"}, {"expr": "prob_to_reach(EX, 0, 0, 0)", "expected": "0.0"}, {"expr": "prob_to_reach(M3, 0, 2, 3)", "expected": "0.25"}, {"expr": "prob_to_reach([[[(0.3, 1, 0.0, False), (0.2, 1, 5.0, True), (0.5, 0, 0.0, False)]], [[(1.0, 1, 0.0, True)]]], 0, 0, 1)", "expected": "0.5"}], "hints": ["Add `prob` only when the outcome goes to `target`.", "`if next_state == target: total += prob` (two `=` signs)."]}, {"t": "ex", "id": "d-term-prob", "title": "terminal_prob(transitions, s, a)", "task": "Return the total probability of the **terminal** outcomes of `(s, a)`.", "starter": "def terminal_prob(transitions, s, a):\n    pass\n", "solution": "def terminal_prob(transitions, s, a):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if terminal:\n            total += prob\n    return total\n", "tests": [{"expr": "terminal_prob(EX, 0, 0)", "expected": "0.2"}, {"expr": "terminal_prob(STUDY, 0, 0)", "expected": "0.0"}, {"expr": "terminal_prob(M3, 1, 1)", "expected": "0.6"}, {"expr": "terminal_prob(M3, 0, 2)", "expected": "0.25"}], "hints": ["Like `sum_probs`, with an `if`.", "`if terminal: total += prob`"]}, {"t": "ex", "id": "d-next-states", "title": "next_states(transitions, s, a)", "task": "Return the list of `next_state` of every outcome of `(s, a)`, in order (keep duplicates).", "starter": "def next_states(transitions, s, a):\n    pass\n", "solution": "def next_states(transitions, s, a):\n    result = []\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        result.append(next_state)\n    return result\n", "tests": [{"expr": "next_states(EX, 0, 0)", "expected": "[1, 2]"}, {"expr": "next_states(M3, 0, 2)", "expected": "[0, 1, 3]"}, {"expr": "next_states(STUDY, 0, 1)", "expected": "[1]"}], "hints": ["Empty list + `append`.", "`result.append(next_state)`"]}]}, {"id": "m1-one-action-2", "part": 1, "title": "One action: max, min, count", "blocks": [{"t": "p", "text": "Same single loop, but now you look for the biggest / smallest, or count something. Remember the cheat sheet: **max → `best = None` + `>`**, **min → `best = None` + `<`**."}, {"t": "ex", "id": "d-max-out-reward", "title": "max_outcome_reward(transitions, s, a)", "task": "Return the largest reward among the outcomes of `(s, a)`.", "starter": "def max_outcome_reward(transitions, s, a):\n    pass\n", "solution": "def max_outcome_reward(transitions, s, a):\n    best = None\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if best is None or reward > best:\n            best = reward\n    return best\n", "tests": [{"expr": "max_outcome_reward(STUDY, 1, 0)", "expected": "20.0"}, {"expr": "max_outcome_reward(M3, 0, 2)", "expected": "2.0"}, {"expr": "max_outcome_reward([[[(0.5, 0, -3.0, False), (0.5, 0, -7.0, True)]]], 0, 0)", "expected": "-3.0"}], "hints": ["`best = None` before the loop (rewards can be negative).", "`if best is None or reward > best: best = reward`"]}, {"t": "ex", "id": "d-min-out-reward", "title": "min_outcome_reward(transitions, s, a)", "task": "Return the smallest reward among the outcomes of `(s, a)`.", "starter": "def min_outcome_reward(transitions, s, a):\n    pass\n", "solution": "def min_outcome_reward(transitions, s, a):\n    best = None\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if best is None or reward < best:\n            best = reward\n    return best\n", "tests": [{"expr": "min_outcome_reward(STUDY, 1, 0)", "expected": "-1.0"}, {"expr": "min_outcome_reward(M3, 0, 2)", "expected": "-4.0"}, {"expr": "min_outcome_reward(EX, 0, 1)", "expected": "4.0"}], "hints": ["Same as max, with `<`.", "`if best is None or reward < best: best = reward`"]}, {"t": "ex", "id": "d-count-pos", "title": "count_positive_outcomes(transitions, s, a)", "task": "Return how many outcomes of `(s, a)` have `prob > 0`.", "starter": "def count_positive_outcomes(transitions, s, a):\n    pass\n", "solution": "def count_positive_outcomes(transitions, s, a):\n    count = 0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if prob > 0:\n            count += 1\n    return count\n", "tests": [{"expr": "count_positive_outcomes(EX, 0, 0)", "expected": "2"}, {"expr": "count_positive_outcomes(M3, 2, 0)", "expected": "1"}, {"expr": "count_positive_outcomes(M3, 0, 2)", "expected": "3"}], "hints": ["Counter `count = 0`.", "`if prob > 0: count += 1`"]}, {"t": "ex", "id": "d-is-det", "title": "is_deterministic_action(transitions, s, a)", "task": "Return `True` if `(s, a)` has **exactly one** outcome with `prob > 0`, otherwise `False`.", "starter": "def is_deterministic_action(transitions, s, a):\n    pass\n", "solution": "def is_deterministic_action(transitions, s, a):\n    count = 0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if prob > 0:\n            count += 1\n    return count == 1\n", "tests": [{"expr": "is_deterministic_action(EX, 0, 0)", "expected": "False"}, {"expr": "is_deterministic_action(EX, 0, 1)", "expected": "True"}, {"expr": "is_deterministic_action(M3, 2, 0)", "expected": "True"}, {"expr": "is_deterministic_action(STUDY, 1, 0)", "expected": "False"}], "hints": ["Count the positive outcomes first, then compare.", "`return count == 1` (a comparison is already True/False)."]}, {"t": "ex", "id": "d-most-likely", "title": "most_likely_next_state(transitions, s, a)", "task": "Return the `next_state` of the outcome with the **highest probability**. On a tie, the first one.", "starter": "def most_likely_next_state(transitions, s, a):\n    pass\n", "solution": "def most_likely_next_state(transitions, s, a):\n    best_p = None\n    best_s = None\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        if best_p is None or prob > best_p:\n            best_p = prob\n            best_s = next_state\n    return best_s\n", "tests": [{"expr": "most_likely_next_state(EX, 0, 0)", "expected": "1"}, {"expr": "most_likely_next_state(M3, 0, 2)", "expected": "0"}, {"expr": "most_likely_next_state(STUDY, 1, 0)", "expected": "2"}, {"expr": "most_likely_next_state(M3, 1, 1)", "expected": "3"}], "hints": ["Keep two variables: the best probability (to compare) and its next_state (the answer).", "Strict `>` keeps the first outcome on a tie. Update both variables inside the if."]}]}, {"id": "m1-one-action-3", "part": 1, "title": "One action: with V and gamma", "blocks": [{"t": "p", "text": "Now `V` (a list of values per state) is involved. **V of next_state** is used, and terminal outcomes have **no future** (use 0)."}, {"t": "code", "code": "future = 0.0 if terminal else V[next_state]", "output": ""}, {"t": "ex", "id": "d-exp-next-v", "title": "expected_next_value(transitions, s, a, V)", "task": "Return Σ prob × V(next_state) over the outcomes of `(s, a)`, where terminal outcomes count as 0. (No reward, no gamma.)", "starter": "def expected_next_value(transitions, s, a, V):\n    pass\n", "solution": "def expected_next_value(transitions, s, a, V):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * future\n    return total\n", "tests": [{"expr": "expected_next_value(EX, 0, 0, [0.0, 5.0, 7.0])", "expected": "4.0"}, {"expr": "expected_next_value(STUDY, 1, 0, [10.0, 9.0, 0.0])", "expected": "4.5"}, {"expr": "expected_next_value(M3, 0, 0, [1.0, 2.0, 3.0, 4.0])", "expected": "2.3"}], "hints": ["`future = 0.0 if terminal else V[next_state]`", "`total += prob * future`"]}, {"t": "ex", "id": "d-q-value", "title": "q_value(transitions, V, s, a, gamma)", "task": "Return Q(s, a) = Σ prob × (reward + gamma × V(next_state)), with V(next_state) = 0 for terminal outcomes.", "starter": "def q_value(transitions, V, s, a, gamma):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n", "tests": [{"expr": "q_value(STUDY, [10.0, 9.0, 0.0], 1, 0, 0.9)", "expected": "13.55"}, {"expr": "q_value(STUDY, [10.0, 9.0, 0.0], 1, 1, 0.9)", "expected": "9.0"}, {"expr": "q_value(EX, [0.0, 5.0, 7.0], 0, 0, 0.5)", "expected": "3.6"}, {"expr": "q_value(M3, [1.0, 2.0, 3.0, 4.0], 0, 2, 0.9)", "expected": "0.3999999999999999"}], "hints": ["Like `expected_next_value`, but the piece is `reward + gamma * future`.", "`total += prob * (reward + gamma * future)`"]}]}, {"id": "m2-one-state", "part": 2, "title": "One state: transitions[s] (2 loops)", "blocks": [{"t": "p", "text": "You get `s` but **not** `a`, so you look at **every action** of that state: loop over `transitions[s]`, then over each action's outcomes. **Two loops.**"}, {"t": "code", "code": "for outcomes in transitions[s]:              # every action of state s\n    for prob, next_state, reward, terminal in outcomes:\n        ...", "output": ""}, {"t": "tip", "text": "Need the action **number** (e.g. to return it)? Use `for a, outcomes in enumerate(transitions[s]):` or `for a in range(len(transitions[s])):`."}, {"t": "ex", "id": "d-num-act-in", "title": "num_actions_in(transitions, s)", "task": "Return how many actions state `s` has.", "starter": "def num_actions_in(transitions, s):\n    pass\n", "solution": "def num_actions_in(transitions, s):\n    return len(transitions[s])\n", "tests": [{"expr": "num_actions_in(EX, 0)", "expected": "2"}, {"expr": "num_actions_in(M3, 0)", "expected": "3"}, {"expr": "num_actions_in(M3, 3)", "expected": "1"}], "hints": ["No loop needed: `transitions[s]` is the list of actions.", "`return len(transitions[s])`"]}, {"t": "ex", "id": "d-reachable", "title": "reachable_states(transitions, state)", "task": "Return a sorted list (no duplicates) of the states reachable in one step from `state`, using any action, through outcomes with `prob > 0`.", "starter": "def reachable_states(transitions, state):\n    pass\n", "solution": "def reachable_states(transitions, state):\n    found = set()\n    for outcomes in transitions[state]:\n        for prob, next_state, reward, terminal in outcomes:\n            if prob > 0:\n                found.add(next_state)\n    return sorted(found)\n", "tests": [{"expr": "reachable_states(EX, 0)", "expected": "[1, 2]"}, {"expr": "reachable_states(STUDY, 1)", "expected": "[0, 1, 2]"}, {"expr": "reachable_states(M3, 0)", "expected": "[0, 1, 2, 3]"}, {"expr": "reachable_states(M3, 2)", "expected": "[0]"}], "hints": ["Collect `next_state` into a `set()` (no duplicates).", "Only when `prob > 0`; finally `return sorted(found)`."]}, {"t": "ex", "id": "d-outcomes-in", "title": "outcomes_in_state(transitions, s)", "task": "Return the total number of outcomes over all actions of state `s`.", "starter": "def outcomes_in_state(transitions, s):\n    pass\n", "solution": "def outcomes_in_state(transitions, s):\n    count = 0\n    for outcomes in transitions[s]:\n        for prob, next_state, reward, terminal in outcomes:\n            count += 1\n    return count\n", "tests": [{"expr": "outcomes_in_state(EX, 0)", "expected": "3"}, {"expr": "outcomes_in_state(M3, 0)", "expected": "6"}, {"expr": "outcomes_in_state(STUDY, 2)", "expected": "1"}], "hints": ["Counter before both loops.", "`count += 1` in the inner loop (or `count += len(outcomes)` in the outer one)."]}, {"t": "ex", "id": "d-max-r-state", "title": "max_reward_in_state(transitions, s)", "task": "Return the largest reward of any outcome of any action of state `s`.", "starter": "def max_reward_in_state(transitions, s):\n    pass\n", "solution": "def max_reward_in_state(transitions, s):\n    best = None\n    for outcomes in transitions[s]:\n        for prob, next_state, reward, terminal in outcomes:\n            if best is None or reward > best:\n                best = reward\n    return best\n", "tests": [{"expr": "max_reward_in_state(EX, 0)", "expected": "4.0"}, {"expr": "max_reward_in_state(M3, 1)", "expected": "8.0"}, {"expr": "max_reward_in_state(STUDY, 0)", "expected": "1.0"}], "hints": ["`best = None` before both loops.", "The `if best is None or reward > best` goes in the inner loop."]}, {"t": "ex", "id": "d-self-loop", "title": "has_self_loop(transitions, s)", "task": "Return `True` if some outcome (with `prob > 0`) of some action of `s` leads back to `s` itself.", "starter": "def has_self_loop(transitions, s):\n    pass\n", "solution": "def has_self_loop(transitions, s):\n    for outcomes in transitions[s]:\n        for prob, next_state, reward, terminal in outcomes:\n            if prob > 0 and next_state == s:\n                return True\n    return False\n", "tests": [{"expr": "has_self_loop(STUDY, 0)", "expected": "True"}, {"expr": "has_self_loop(EX, 0)", "expected": "False"}, {"expr": "has_self_loop(M3, 0)", "expected": "True"}, {"expr": "has_self_loop(M3, 2)", "expected": "False"}], "hints": ["\"Some\" = at least one, so you can `return True` as soon as you find one.", "After both loops: `return False`."]}]}, {"id": "m2-one-state-2", "part": 2, "title": "One state: answers about actions", "blocks": [{"t": "p", "text": "Here the answer is about **actions** (their numbers), so you need `a`. Work out something **per action** (reset inside the action loop), then decide."}, {"t": "ex", "id": "d-can-term", "title": "can_terminate(transitions, s)", "task": "Return `True` if some action of `s` has a terminal outcome with `prob > 0`.", "starter": "def can_terminate(transitions, s):\n    pass\n", "solution": "def can_terminate(transitions, s):\n    for outcomes in transitions[s]:\n        for prob, next_state, reward, terminal in outcomes:\n            if terminal and prob > 0:\n                return True\n    return False\n", "tests": [{"expr": "can_terminate(EX, 0)", "expected": "True"}, {"expr": "can_terminate(STUDY, 0)", "expected": "False"}, {"expr": "can_terminate(M3, 2)", "expected": "False"}, {"expr": "can_terminate(M3, 1)", "expected": "True"}], "hints": ["At least one → early `return True`.", "Condition: `terminal and prob > 0`."]}, {"t": "ex", "id": "d-term-actions", "title": "terminal_actions(transitions, s)", "task": "Return the list of action indices of `s` that have at least one terminal outcome with `prob > 0`. Each action at most once.", "starter": "def terminal_actions(transitions, s):\n    pass\n", "solution": "def terminal_actions(transitions, s):\n    result = []\n    for a, outcomes in enumerate(transitions[s]):\n        for prob, next_state, reward, terminal in outcomes:\n            if terminal and prob > 0:\n                result.append(a)\n                break\n    return result\n", "tests": [{"expr": "terminal_actions(EX, 0)", "expected": "[0, 1]"}, {"expr": "terminal_actions(M3, 0)", "expected": "[1, 2]"}, {"expr": "terminal_actions(M3, 2)", "expected": "[]"}, {"expr": "terminal_actions(STUDY, 1)", "expected": "[0]"}], "hints": ["You return action numbers → `for a, outcomes in enumerate(transitions[s]):`.", "After `result.append(a)` write `break` so the same action is not added twice."]}, {"t": "ex", "id": "d-best-r-act", "title": "best_reward_action(transitions, s)", "task": "Return the index of the action of `s` with the highest expected immediate reward (Σ prob × reward). Ties → lowest index.", "starter": "def best_reward_action(transitions, s):\n    pass\n", "solution": "def best_reward_action(transitions, s):\n    best_a = 0\n    best_r = None\n    for a in range(len(transitions[s])):\n        r = 0.0\n        for prob, next_state, reward, terminal in transitions[s][a]:\n            r += prob * reward\n        if best_r is None or r > best_r:\n            best_a = a\n            best_r = r\n    return best_a\n", "tests": [{"expr": "best_reward_action(EX, 0)", "expected": "1"}, {"expr": "best_reward_action(STUDY, 0)", "expected": "0"}, {"expr": "best_reward_action(STUDY, 1)", "expected": "0"}, {"expr": "best_reward_action(M3, 0)", "expected": "1"}], "hints": ["For each action compute `r = Σ prob * reward` (reset `r = 0.0` per action), then use argmax.", "Keep `best_a` and `best_r`; strict `>` for ties."]}, {"t": "ex", "id": "d-avg-exp-r", "title": "avg_expected_reward(transitions, s)", "task": "Return the average, over the actions of `s`, of each action's expected immediate reward.", "starter": "def avg_expected_reward(transitions, s):\n    pass\n", "solution": "def avg_expected_reward(transitions, s):\n    total = 0.0\n    for outcomes in transitions[s]:\n        for prob, next_state, reward, terminal in outcomes:\n            total += prob * reward\n    return total / len(transitions[s])\n", "tests": [{"expr": "avg_expected_reward(STUDY, 0)", "expected": "0.0"}, {"expr": "avg_expected_reward(EX, 0)", "expected": "2.8"}, {"expr": "avg_expected_reward(M3, 1)", "expected": "3.5"}], "hints": ["Add up `prob * reward` over all actions, then divide by the number of actions.", "`return total / len(transitions[s])`"]}]}, {"id": "m3-whole", "part": 3, "title": "Whole MDP: transitions (3 loops)", "blocks": [{"t": "p", "text": "Only `transitions` is given and the question is about the **whole MDP** → **three loops**: states → actions → outcomes. The start value goes **before all loops** when the answer is one thing for the whole MDP."}, {"t": "code", "code": "for actions in transitions:                 # every state\n    for outcomes in actions:                # every action\n        for prob, next_state, reward, terminal in outcomes:   # every outcome\n            ...", "output": ""}, {"t": "ex", "id": "d-count-out", "title": "count_outcomes(transitions)", "task": "Return the total number of outcomes in the MDP.", "starter": "def count_outcomes(transitions):\n    pass\n", "solution": "def count_outcomes(transitions):\n    count = 0\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                count += 1\n    return count\n", "tests": [{"expr": "count_outcomes(EX)", "expected": "5"}, {"expr": "count_outcomes(STUDY)", "expected": "6"}, {"expr": "count_outcomes(M3)", "expected": "12"}], "hints": ["Counter before all three loops.", "`count += 1` in the innermost loop."]}, {"t": "ex", "id": "d-count-term", "title": "count_terminal_outcomes(transitions)", "task": "Return how many outcomes in the MDP have `terminal == True`.", "starter": "def count_terminal_outcomes(transitions):\n    pass\n", "solution": "def count_terminal_outcomes(transitions):\n    count = 0\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if terminal:\n                    count += 1\n    return count\n", "tests": [{"expr": "count_terminal_outcomes(EX)", "expected": "4"}, {"expr": "count_terminal_outcomes(STUDY)", "expected": "2"}, {"expr": "count_terminal_outcomes(M3)", "expected": "5"}], "hints": ["Triple loop + counter.", "`if terminal: count += 1`"]}, {"t": "ex", "id": "d-count-zero", "title": "count_zero_prob_outcomes(transitions)", "task": "Return how many outcomes in the MDP have probability exactly `0`.", "starter": "def count_zero_prob_outcomes(transitions):\n    pass\n", "solution": "def count_zero_prob_outcomes(transitions):\n    count = 0\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if prob == 0:\n                    count += 1\n    return count\n", "tests": [{"expr": "count_zero_prob_outcomes(EX)", "expected": "0"}, {"expr": "count_zero_prob_outcomes(M3)", "expected": "1"}, {"expr": "count_zero_prob_outcomes([[[(0.0, 0, 0.0, False), (1.0, 0, 0.0, True)], [(0.0, 0, 1.0, True), (1.0, 0, 0.0, True)]]])", "expected": "2"}], "hints": ["Triple loop + counter.", "`if prob == 0: count += 1`"]}, {"t": "ex", "id": "d-total-act", "title": "total_actions(transitions)", "task": "Return the total number of actions in the MDP (summed over all states).", "starter": "def total_actions(transitions):\n    pass\n", "solution": "def total_actions(transitions):\n    total = 0\n    for actions in transitions:\n        total += len(actions)\n    return total\n", "tests": [{"expr": "total_actions(EX)", "expected": "4"}, {"expr": "total_actions(STUDY)", "expected": "5"}, {"expr": "total_actions(M3)", "expected": "7"}], "hints": ["You don't need the outcomes, so one loop is enough.", "`total += len(actions)`"]}, {"t": "ex", "id": "d-max-act", "title": "max_actions(transitions)", "task": "Return the largest number of actions that any single state has.", "starter": "def max_actions(transitions):\n    pass\n", "solution": "def max_actions(transitions):\n    best = None\n    for actions in transitions:\n        if best is None or len(actions) > best:\n            best = len(actions)\n    return best\n", "tests": [{"expr": "max_actions(EX)", "expected": "2"}, {"expr": "max_actions(STUDY)", "expected": "2"}, {"expr": "max_actions(M3)", "expected": "3"}], "hints": ["Max pattern over `len(actions)`.", "One loop over states is enough."]}]}, {"id": "m3-whole-2", "part": 3, "title": "Whole MDP: max, min, sets, any", "blocks": [{"t": "ex", "id": "d-max-reward", "title": "max_reward(transitions)", "task": "Return the largest reward of any outcome in the MDP.", "starter": "def max_reward(transitions):\n    pass\n", "solution": "def max_reward(transitions):\n    best = None\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if best is None or reward > best:\n                    best = reward\n    return best\n", "tests": [{"expr": "max_reward(EX)", "expected": "4.0"}, {"expr": "max_reward(STUDY)", "expected": "20.0"}, {"expr": "max_reward(M3)", "expected": "100.0"}, {"expr": "max_reward([[[(1.0, 0, -3.0, True)], [(1.0, 0, -7.0, True)]]])", "expected": "-3.0"}], "hints": ["`best = None` before all loops (all rewards may be negative).", "`if best is None or reward > best: best = reward` in the innermost loop."]}, {"t": "ex", "id": "d-min-reward", "title": "min_reward(transitions)", "task": "Return the smallest reward of any outcome in the MDP.", "starter": "def min_reward(transitions):\n    pass\n", "solution": "def min_reward(transitions):\n    best = None\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if best is None or reward < best:\n                    best = reward\n    return best\n", "tests": [{"expr": "min_reward(EX)", "expected": "0.0"}, {"expr": "min_reward(STUDY)", "expected": "-1.0"}, {"expr": "min_reward(M3)", "expected": "-4.0"}], "hints": ["Same as max with `<`.", "`best = None` before all loops."]}, {"t": "ex", "id": "d-has-neg", "title": "has_negative_reward(transitions)", "task": "Return `True` if any outcome in the MDP has a negative reward, otherwise `False`.", "starter": "def has_negative_reward(transitions):\n    pass\n", "solution": "def has_negative_reward(transitions):\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if reward < 0:\n                    return True\n    return False\n", "tests": [{"expr": "has_negative_reward(EX)", "expected": "False"}, {"expr": "has_negative_reward(STUDY)", "expected": "True"}, {"expr": "has_negative_reward(M3)", "expected": "True"}], "hints": ["\"Any\" → early `return True` when you find one.", "`return False` after all loops."]}, {"t": "ex", "id": "d-uniq-rewards", "title": "unique_rewards(transitions)", "task": "Return a sorted list of all **different** rewards that appear in the MDP.", "starter": "def unique_rewards(transitions):\n    pass\n", "solution": "def unique_rewards(transitions):\n    found = set()\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                found.add(reward)\n    return sorted(found)\n", "tests": [{"expr": "unique_rewards(EX)", "expected": "[0.0, 2.0, 4.0]"}, {"expr": "unique_rewards(STUDY)", "expected": "[-1.0, 0.0, 1.0, 20.0]"}, {"expr": "unique_rewards(M3)", "expected": "[-4.0, -2.0, -1.0, 0.0, 2.0, 3.0, 5.0, 8.0, 10.0, 100.0]"}], "hints": ["Different = no duplicates → `set()`.", "`found.add(reward)`, then `return sorted(found)`."]}, {"t": "ex", "id": "d-term-targets", "title": "terminal_targets(transitions)", "task": "Return a sorted list (no duplicates) of the `next_state`s that appear in a terminal outcome anywhere in the MDP.", "starter": "def terminal_targets(transitions):\n    pass\n", "solution": "def terminal_targets(transitions):\n    found = set()\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if terminal:\n                    found.add(next_state)\n    return sorted(found)\n", "tests": [{"expr": "terminal_targets(EX)", "expected": "[1, 2]"}, {"expr": "terminal_targets(STUDY)", "expected": "[2]"}, {"expr": "terminal_targets(M3)", "expected": "[3]"}], "hints": ["Set + `if terminal`.", "`found.add(next_state)`, `return sorted(found)`."]}]}, {"id": "m3-whole-3", "part": 3, "title": "Whole MDP: checks over every action", "blocks": [{"t": "p", "text": "\"For **every** state and action\" → the check is about **one action**: start the per-action value inside the action loop, check it **after** the outcome loop. One failure → `return False`; `return True` at the very end."}, {"t": "ex", "id": "d-valid-mdp", "title": "valid_mdp(transitions)", "task": "Return `True` if, for every state and action, the outcome probabilities add up to 1 (within `1e-9`). Otherwise `False`.", "starter": "def valid_mdp(transitions):\n    pass\n", "solution": "def valid_mdp(transitions):\n    for actions in transitions:\n        for outcomes in actions:\n            total = 0.0\n            for prob, next_state, reward, terminal in outcomes:\n                total += prob\n            if abs(total - 1.0) > 1e-9:\n                return False\n    return True\n", "tests": [{"expr": "valid_mdp(EX)", "expected": "True"}, {"expr": "valid_mdp(M3)", "expected": "True"}, {"expr": "valid_mdp([[[(0.5, 0, 1.0, False), (0.4, 0, 0.0, True)]]])", "expected": "False"}, {"expr": "valid_mdp([[[(1.0, 1, 0.0, True)]], [[(0.7, 0, 0.0, False), (0.7, 1, 0.0, True)]]])", "expected": "False"}], "hints": ["`total = 0.0` inside the action loop (before the outcome loop).", "After the outcome loop: `if abs(total - 1.0) > 1e-9: return False`. After all loops: `return True`."]}, {"t": "ex", "id": "d-valid-probs", "title": "probs_in_range(transitions)", "task": "Return `True` if every probability in the MDP is between 0 and 1 (both included), otherwise `False`.", "starter": "def probs_in_range(transitions):\n    pass\n", "solution": "def probs_in_range(transitions):\n    for actions in transitions:\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if prob < 0 or prob > 1:\n                    return False\n    return True\n", "tests": [{"expr": "probs_in_range(EX)", "expected": "True"}, {"expr": "probs_in_range(M3)", "expected": "True"}, {"expr": "probs_in_range([[[(1.2, 0, 0.0, True), (-0.2, 0, 0.0, True)]]])", "expected": "False"}], "hints": ["Every → one bad value → `return False`.", "Bad value: `prob < 0 or prob > 1`."]}, {"t": "ex", "id": "d-count-self", "title": "count_self_loops(transitions)", "task": "Return how many outcomes (with `prob > 0`) lead back to the **same** state they start from.", "starter": "def count_self_loops(transitions):\n    pass\n", "solution": "def count_self_loops(transitions):\n    count = 0\n    for s, actions in enumerate(transitions):\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if prob > 0 and next_state == s:\n                    count += 1\n    return count\n", "tests": [{"expr": "count_self_loops(EX)", "expected": "2"}, {"expr": "count_self_loops(STUDY)", "expected": "3"}, {"expr": "count_self_loops(M3)", "expected": "3"}], "hints": ["You compare `next_state` with the current state number → you need `s` → `enumerate(transitions)`.", "`if prob > 0 and next_state == s: count += 1`"]}]}, {"id": "m4-states", "part": 4, "title": "Lists of states (enumerate)", "blocks": [{"t": "p", "text": "\"Return the list of **states** that …\" → you put **state numbers** in the answer → `for s, actions in enumerate(transitions):`."}, {"t": "code", "code": "result = []\nfor s, actions in enumerate(transitions):\n    if ...:\n        result.append(s)\nreturn result", "output": ""}, {"t": "ex", "id": "d-num-actions", "title": "num_actions(transitions)", "task": "Return a list: how many actions each state has.", "starter": "def num_actions(transitions):\n    pass\n", "solution": "def num_actions(transitions):\n    result = []\n    for actions in transitions:\n        result.append(len(actions))\n    return result\n", "tests": [{"expr": "num_actions(EX)", "expected": "[2, 1, 1]"}, {"expr": "num_actions(STUDY)", "expected": "[2, 2, 1]"}, {"expr": "num_actions(M3)", "expected": "[3, 2, 1, 1]"}], "hints": ["One value per state → one loop over states.", "`result.append(len(actions))`"]}, {"t": "ex", "id": "d-one-action", "title": "states_with_one_action(transitions)", "task": "Return the list of states that have exactly one action.", "starter": "def states_with_one_action(transitions):\n    pass\n", "solution": "def states_with_one_action(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        if len(actions) == 1:\n            result.append(s)\n    return result\n", "tests": [{"expr": "states_with_one_action(EX)", "expected": "[1, 2]"}, {"expr": "states_with_one_action(STUDY)", "expected": "[2]"}, {"expr": "states_with_one_action(M3)", "expected": "[2, 3]"}], "hints": ["`enumerate` gives you `s`.", "`if len(actions) == 1: result.append(s)`"]}, {"t": "ex", "id": "d-outc-per-state", "title": "outcomes_per_state(transitions)", "task": "Return a list: for each state, the total number of outcomes over all its actions.", "starter": "def outcomes_per_state(transitions):\n    pass\n", "solution": "def outcomes_per_state(transitions):\n    result = []\n    for actions in transitions:\n        count = 0\n        for outcomes in actions:\n            count += len(outcomes)\n        result.append(count)\n    return result\n", "tests": [{"expr": "outcomes_per_state(EX)", "expected": "[3, 1, 1]"}, {"expr": "outcomes_per_state(STUDY)", "expected": "[2, 3, 1]"}, {"expr": "outcomes_per_state(M3)", "expected": "[6, 3, 2, 1]"}], "hints": ["One number per state → reset `count = 0` **inside** the state loop.", "Append `count` after the action loop."]}, {"t": "ex", "id": "d-states-reaching", "title": "states_reaching(transitions, target)", "task": "Return the list of states that can reach `target` in one step (some action, some outcome with `prob > 0`). Each state at most once.", "starter": "def states_reaching(transitions, target):\n    pass\n", "solution": "def states_reaching(transitions, target):\n    result = []\n    for s, actions in enumerate(transitions):\n        found = False\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if prob > 0 and next_state == target:\n                    found = True\n        if found:\n            result.append(s)\n    return result\n", "tests": [{"expr": "states_reaching(EX, 2)", "expected": "[0, 2]"}, {"expr": "states_reaching(STUDY, 0)", "expected": "[0, 1]"}, {"expr": "states_reaching(M3, 3)", "expected": "[0, 1, 3]"}, {"expr": "states_reaching(M3, 0)", "expected": "[0, 2]"}], "hints": ["Per state: a flag `found = False`; set it to True when an outcome goes to `target`.", "After the action loop: `if found: result.append(s)` (so each state only once)."]}, {"t": "ex", "id": "d-term-states", "title": "terminating_states(transitions)", "task": "Return the list of states that have at least one action with a terminal outcome with `prob > 0`.", "starter": "def terminating_states(transitions):\n    pass\n", "solution": "def terminating_states(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        found = False\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if terminal and prob > 0:\n                    found = True\n        if found:\n            result.append(s)\n    return result\n", "tests": [{"expr": "terminating_states(EX)", "expected": "[0, 1, 2]"}, {"expr": "terminating_states(STUDY)", "expected": "[1, 2]"}, {"expr": "terminating_states(M3)", "expected": "[0, 1, 3]"}], "hints": ["Same shape as `states_reaching`.", "Condition: `terminal and prob > 0`."]}]}, {"id": "m4-states-2", "part": 4, "title": "Lists of states: per-action checks", "blocks": [{"t": "p", "text": "\"At least one **action** with …\" → count/check **per action** (reset inside the action loop), check after the outcome loop, then `append(s)` + `break`. \"**Every** action …\" → a flag `ok = True` per state."}, {"t": "ex", "id": "d-stoch", "title": "stochastic_states(transitions)", "task": "Return the list of states that have at least one action with 2 or more outcomes with `prob > 0`. Each state at most once.", "starter": "def stochastic_states(transitions):\n    pass\n", "solution": "def stochastic_states(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        for outcomes in actions:\n            positive = 0\n            for prob, next_state, reward, terminal in outcomes:\n                if prob > 0:\n                    positive += 1\n            if positive >= 2:\n                result.append(s)\n                break\n    return result\n", "tests": [{"expr": "stochastic_states(EX)", "expected": "[0]"}, {"expr": "stochastic_states(STUDY)", "expected": "[1]"}, {"expr": "stochastic_states(M3)", "expected": "[0, 1]"}, {"expr": "stochastic_states([[[(1.0, 0, 0.0, False)], [(0.5, 0, 0.0, False), (0.5, 0, 1.0, True)]], [[(1.0, 1, 0.0, True), (0.0, 0, 0.0, False)]]])", "expected": "[0]"}], "hints": ["`positive = 0` inside the action loop; count `prob > 0` outcomes.", "After the outcome loop: `if positive >= 2: result.append(s); break`."]}, {"t": "ex", "id": "d-determ", "title": "deterministic_states(transitions)", "task": "Return the list of states where **every** action has exactly one outcome with `prob > 0`.", "starter": "def deterministic_states(transitions):\n    pass\n", "solution": "def deterministic_states(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        ok = True\n        for outcomes in actions:\n            positive = 0\n            for prob, next_state, reward, terminal in outcomes:\n                if prob > 0:\n                    positive += 1\n            if positive != 1:\n                ok = False\n                break\n        if ok:\n            result.append(s)\n    return result\n", "tests": [{"expr": "deterministic_states(EX)", "expected": "[1, 2]"}, {"expr": "deterministic_states(STUDY)", "expected": "[0, 2]"}, {"expr": "deterministic_states(M3)", "expected": "[2, 3]"}], "hints": ["Per state: `ok = True`. Per action: count positive outcomes.", "If an action has `positive != 1`: `ok = False; break`. After the action loop: `if ok: result.append(s)`."]}, {"t": "ex", "id": "d-always-term", "title": "always_terminal_states(transitions)", "task": "Return the list of states where **every** outcome (with `prob > 0`) of **every** action is terminal.", "starter": "def always_terminal_states(transitions):\n    pass\n", "solution": "def always_terminal_states(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        ok = True\n        for outcomes in actions:\n            for prob, next_state, reward, terminal in outcomes:\n                if prob > 0 and not terminal:\n                    ok = False\n        if ok:\n            result.append(s)\n    return result\n", "tests": [{"expr": "always_terminal_states(EX)", "expected": "[1, 2]"}, {"expr": "always_terminal_states(STUDY)", "expected": "[2]"}, {"expr": "always_terminal_states(M3)", "expected": "[3]"}], "hints": ["Flag `ok = True` per state; one non-terminal outcome breaks it.", "Bad outcome: `prob > 0 and not terminal`."]}, {"t": "ex", "id": "d-multi-action", "title": "states_with_choice(transitions)", "task": "Return the list of states that have **2 or more** actions.", "starter": "def states_with_choice(transitions):\n    pass\n", "solution": "def states_with_choice(transitions):\n    result = []\n    for s, actions in enumerate(transitions):\n        if len(actions) >= 2:\n            result.append(s)\n    return result\n", "tests": [{"expr": "states_with_choice(EX)", "expected": "[0]"}, {"expr": "states_with_choice(STUDY)", "expected": "[0, 1]"}, {"expr": "states_with_choice(M3)", "expected": "[0, 1]"}], "hints": ["Like `states_with_one_action`.", "`if len(actions) >= 2:`"]}]}, {"id": "m4-tables", "part": 4, "title": "Lists of lists and per-state answers", "blocks": [{"t": "p", "text": "\"Return a list of lists: `table[s][a]` = …\" → one **row per state**, one **number per action** in the row."}, {"t": "code", "code": "table = []\nfor s in range(len(transitions)):\n    row = []\n    for a in range(len(transitions[s])):\n        row.append(...)\n    table.append(row)\nreturn table", "output": ""}, {"t": "ex", "id": "d-er-table", "title": "expected_reward_table(transitions)", "task": "Return a list of lists where `table[s][a]` is the expected immediate reward Σ prob × reward of `(s, a)`.", "starter": "def expected_reward_table(transitions):\n    pass\n", "solution": "def expected_reward_table(transitions):\n    table = []\n    for s in range(len(transitions)):\n        row = []\n        for a in range(len(transitions[s])):\n            r = 0.0\n            for prob, next_state, reward, terminal in transitions[s][a]:\n                r += prob * reward\n            row.append(r)\n        table.append(row)\n    return table\n", "tests": [{"expr": "expected_reward_table(EX)", "expected": "[[1.6, 4.0], [0.0], [0.0]]"}, {"expr": "expected_reward_table(STUDY)", "expected": "[[1.0, -1.0], [9.5, 0.0], [0.0]]"}, {"expr": "expected_reward_table(M3)", "expected": "[[3.2, 10.0, -0.5], [3.0, 4.0], [-1.0], [0.0]]"}], "hints": ["Two loops build the table; a third loop computes `r` for one action (reset `r = 0.0` per action).", "`row.append(r)` after the outcome loop; `table.append(row)` after the action loop."]}, {"t": "ex", "id": "d-best-r-actions", "title": "best_reward_actions(transitions)", "task": "Return a list: for each state, the index of the action with the highest expected immediate reward (ties → lowest index).", "starter": "def best_reward_actions(transitions):\n    pass\n", "solution": "def best_reward_actions(transitions):\n    result = []\n    for s in range(len(transitions)):\n        best_a = 0\n        best_r = None\n        for a in range(len(transitions[s])):\n            r = 0.0\n            for prob, next_state, reward, terminal in transitions[s][a]:\n                r += prob * reward\n            if best_r is None or r > best_r:\n                best_a = a\n                best_r = r\n        result.append(best_a)\n    return result\n", "tests": [{"expr": "best_reward_actions(EX)", "expected": "[1, 0, 0]"}, {"expr": "best_reward_actions(STUDY)", "expected": "[0, 0, 0]"}, {"expr": "best_reward_actions(M3)", "expected": "[1, 1, 0, 0]"}], "hints": ["This is `best_reward_action` for every state.", "Reset `best_a = 0`, `best_r = None` **inside** the state loop; append `best_a` after the action loop."]}, {"t": "ex", "id": "d-tprob-table", "title": "terminal_prob_table(transitions)", "task": "Return a list of lists where `table[s][a]` is the total probability of the terminal outcomes of `(s, a)`.", "starter": "def terminal_prob_table(transitions):\n    pass\n", "solution": "def terminal_prob_table(transitions):\n    table = []\n    for actions in transitions:\n        row = []\n        for outcomes in actions:\n            t = 0.0\n            for prob, next_state, reward, terminal in outcomes:\n                if terminal:\n                    t += prob\n            row.append(t)\n        table.append(row)\n    return table\n", "tests": [{"expr": "terminal_prob_table(EX)", "expected": "[[0.2, 1.0], [1.0], [1.0]]"}, {"expr": "terminal_prob_table(STUDY)", "expected": "[[0.0, 0.0], [0.5, 0.0], [1.0]]"}, {"expr": "terminal_prob_table(M3)", "expected": "[[0.0, 1.0, 0.25], [0.0, 0.6], [0.0], [1.0]]"}], "hints": ["Same shape as `expected_reward_table`.", "Inner sum: `if terminal: t += prob`."]}]}, {"id": "m5-rewards", "part": 5, "title": "Rewards lists and discounting", "blocks": [{"t": "p", "text": "Here the input is a plain list of rewards. Step `i` is worth `gamma ** i` (the first reward gets γ⁰ = 1). Need the step number → `enumerate`."}, {"t": "code", "code": "for i, r in enumerate(rewards):\n    ...  # i = step number, r = reward", "output": ""}, {"t": "ex", "id": "d-total-r", "title": "total_reward(rewards)", "task": "Return the plain (undiscounted) sum of the rewards.", "starter": "def total_reward(rewards):\n    pass\n", "solution": "def total_reward(rewards):\n    total = 0.0\n    for r in rewards:\n        total += r\n    return total\n", "tests": [{"expr": "total_reward([1, 2, 3])", "expected": "6.0"}, {"expr": "total_reward([-1, -1, 10])", "expected": "8.0"}, {"expr": "total_reward([])", "expected": "0.0"}], "hints": ["Accumulator.", "`total += r`"]}, {"t": "ex", "id": "d-disc-ret", "title": "discounted_return(rewards, gamma)", "task": "Return r₀ + γ·r₁ + γ²·r₂ + …", "starter": "def discounted_return(rewards, gamma):\n    pass\n", "solution": "def discounted_return(rewards, gamma):\n    total = 0.0\n    for i, r in enumerate(rewards):\n        total += (gamma ** i) * r\n    return total\n", "tests": [{"expr": "discounted_return([1, 2, 3], 0.5)", "expected": "2.75"}, {"expr": "discounted_return([-1, -1, -1, 10], 0.9)", "expected": "4.580000000000001"}, {"expr": "discounted_return([5], 0.9)", "expected": "5.0"}, {"expr": "discounted_return([], 0.9)", "expected": "0.0"}], "hints": ["`enumerate` gives the step number `i`.", "`total += (gamma ** i) * r`"]}, {"t": "ex", "id": "d-weights", "title": "discount_weights(gamma, n)", "task": "Return the list `[γ⁰, γ¹, …, γⁿ⁻¹]`.", "starter": "def discount_weights(gamma, n):\n    pass\n", "solution": "def discount_weights(gamma, n):\n    result = []\n    for i in range(n):\n        result.append(gamma ** i)\n    return result\n", "tests": [{"expr": "discount_weights(0.5, 4)", "expected": "[1.0, 0.5, 0.25, 0.125]"}, {"expr": "discount_weights(0.9, 3)", "expected": "[1.0, 0.9, 0.81]"}, {"expr": "discount_weights(0.9, 0)", "expected": "[]"}], "hints": ["`for i in range(n):`", "`result.append(gamma ** i)`"]}, {"t": "ex", "id": "d-ret-from", "title": "discounted_return_from(rewards, gamma, t)", "task": "Return the discounted return starting at step `t`: rₜ + γ·rₜ₊₁ + γ²·rₜ₊₂ + … (rₜ gets γ⁰).", "starter": "def discounted_return_from(rewards, gamma, t):\n    pass\n", "solution": "def discounted_return_from(rewards, gamma, t):\n    total = 0.0\n    for i in range(t, len(rewards)):\n        total += (gamma ** (i - t)) * rewards[i]\n    return total\n", "tests": [{"expr": "discounted_return_from([1, 2, 3], 0.5, 0)", "expected": "2.75"}, {"expr": "discounted_return_from([1, 2, 3], 0.5, 1)", "expected": "3.5"}, {"expr": "discounted_return_from([-1, -1, -1, 10], 0.9, 2)", "expected": "8.0"}, {"expr": "discounted_return_from([4, 5], 0.9, 2)", "expected": "0.0"}], "hints": ["Loop `i` from `t` to the end: `range(t, len(rewards))`.", "The power is `i - t`, so the first used reward gets γ⁰."]}, {"t": "ex", "id": "d-returns-each", "title": "returns_each_step(rewards, gamma)", "task": "Return a list `out` where `out[t]` is the return from step `t`. (Walk backwards: Gₜ = rₜ + γ·Gₜ₊₁.)", "starter": "def returns_each_step(rewards, gamma):\n    pass\n", "solution": "def returns_each_step(rewards, gamma):\n    out = [0.0] * len(rewards)\n    G = 0.0\n    for t in range(len(rewards) - 1, -1, -1):\n        G = rewards[t] + gamma * G\n        out[t] = G\n    return out\n", "tests": [{"expr": "returns_each_step([-1, -1, -1, 10], 0.9)", "expected": "[4.58, 6.2, 8.0, 10.0]"}, {"expr": "returns_each_step([1, 2, 3], 0.5)", "expected": "[2.75, 3.5, 3.0]"}, {"expr": "returns_each_step([], 0.9)", "expected": "[]"}], "hints": ["`out = [0.0] * len(rewards)`, `G = 0.0`, loop backwards with `range(len(rewards) - 1, -1, -1)`.", "Inside: `G = rewards[t] + gamma * G` then `out[t] = G`."]}, {"t": "ex", "id": "d-first-pos", "title": "first_positive_step(rewards)", "task": "Return the index of the first reward that is greater than 0, or `-1` if there is none.", "starter": "def first_positive_step(rewards):\n    pass\n", "solution": "def first_positive_step(rewards):\n    for i, r in enumerate(rewards):\n        if r > 0:\n            return i\n    return -1\n", "tests": [{"expr": "first_positive_step([-1, -1, 10, 5])", "expected": "2"}, {"expr": "first_positive_step([3])", "expected": "0"}, {"expr": "first_positive_step([-1, 0])", "expected": "-1"}], "hints": ["Return the **index** → `enumerate`.", "Early `return i`; after the loop `return -1`."]}]}, {"id": "m6-mdp", "part": 6, "title": "Exam mix: solving MDPs", "blocks": [{"t": "p", "text": "Harder exam-style functions. `q_value` is already written in the box for you; build on it. Remember: value iteration = **max** Q, policy evaluation = Q of **policy[s]**, policy extraction = **argmax** Q."}, {"t": "ex", "id": "d-backup", "title": "bellman_backup(transitions, V, s, gamma)", "task": "Return the largest Q(s, a) over the actions of state `s`.", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef bellman_backup(transitions, V, s, gamma):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef bellman_backup(transitions, V, s, gamma):\n    best = None\n    for a in range(len(transitions[s])):\n        q = q_value(transitions, V, s, a, gamma)\n        if best is None or q > best:\n            best = q\n    return best\n", "tests": [{"expr": "bellman_backup(STUDY, [10.0, 9.0, 0.0], 1, 0.9)", "expected": "13.55"}, {"expr": "bellman_backup(EX, [0.0, 0.0, 0.0], 0, 0.9)", "expected": "4.0"}, {"expr": "bellman_backup(M3, [1.0, 2.0, 3.0, 4.0], 0, 0.9)", "expected": "10.0"}], "hints": ["Loop over actions, compute `q` with `q_value`, keep the max.", "`best = None`, `if best is None or q > best: best = q`."]}, {"t": "ex", "id": "d-best-action", "title": "best_action(transitions, V, s, gamma)", "task": "Return the index of the action with the largest Q(s, a). Ties → lowest index.", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef best_action(transitions, V, s, gamma):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef best_action(transitions, V, s, gamma):\n    best_a = 0\n    best_q = None\n    for a in range(len(transitions[s])):\n        q = q_value(transitions, V, s, a, gamma)\n        if best_q is None or q > best_q:\n            best_a = a\n            best_q = q\n    return best_a\n", "tests": [{"expr": "best_action(STUDY, [10.0, 9.0, 0.0], 0, 0.9)", "expected": "0"}, {"expr": "best_action(STUDY, [14.5, 17.3, 0.0], 0, 0.9)", "expected": "1"}, {"expr": "best_action(M3, [1.0, 2.0, 3.0, 4.0], 0, 0.9)", "expected": "1"}, {"expr": "best_action([[[(1.0, 0, 1.0, True)], [(1.0, 0, 1.0, True)]]], [0.0], 0, 0.9)", "expected": "0"}], "hints": ["Like `bellman_backup`, but also remember the action number.", "Update `best_a` and `best_q` together; strict `>`."]}, {"t": "ex", "id": "d-q-table", "title": "q_table(transitions, V, gamma)", "task": "Return a list of lists: `table[s][a]` = Q(s, a).", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef q_table(transitions, V, gamma):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef q_table(transitions, V, gamma):\n    table = []\n    for s in range(len(transitions)):\n        row = []\n        for a in range(len(transitions[s])):\n            row.append(q_value(transitions, V, s, a, gamma))\n        table.append(row)\n    return table\n", "tests": [{"expr": "q_table(STUDY, [10.0, 9.0, 0.0], 0.9)", "expected": "[[10.0, 7.1], [13.55, 9.0], [0.0]]"}, {"expr": "q_table(EX, [0.0, 0.0, 0.0], 0.9)", "expected": "[[1.6, 4.0], [0.0], [0.0]]"}], "hints": ["Two loops: states (rows), actions (numbers in a row).", "`row.append(q_value(transitions, V, s, a, gamma))`"]}, {"t": "ex", "id": "d-greedy-pol", "title": "greedy_policy(transitions, V, gamma)", "task": "Return the list of best actions, one per state (ties → lowest index).", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef greedy_policy(transitions, V, gamma):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef greedy_policy(transitions, V, gamma):\n    policy = []\n    for s in range(len(transitions)):\n        best_a = 0\n        best_q = None\n        for a in range(len(transitions[s])):\n            q = q_value(transitions, V, s, a, gamma)\n            if best_q is None or q > best_q:\n                best_a = a\n                best_q = q\n        policy.append(best_a)\n    return policy\n", "tests": [{"expr": "greedy_policy(STUDY, [10.0, 9.0, 0.0], 0.9)", "expected": "[0, 0, 0]"}, {"expr": "greedy_policy(STUDY, [7.55, 13.775, 0.0], 0.9)", "expected": "[1, 0, 0]"}, {"expr": "greedy_policy(M3, [1.0, 2.0, 3.0, 4.0], 0.9)", "expected": "[1, 0, 0, 0]"}], "hints": ["`best_action` for every state.", "Reset `best_a = 0`, `best_q = None` inside the state loop."]}, {"t": "ex", "id": "d-vi", "title": "value_iteration(transitions, gamma, k)", "task": "Start from all zeros, do `k` batch sweeps of V(s) = max_a Q(s, a), return V.", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef value_iteration(transitions, gamma, k):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef value_iteration(transitions, gamma, k):\n    n = len(transitions)\n    V = [0.0] * n\n    for _ in range(k):\n        new_V = [0.0] * n\n        for s in range(n):\n            best = None\n            for a in range(len(transitions[s])):\n                q = q_value(transitions, V, s, a, gamma)\n                if best is None or q > best:\n                    best = q\n            new_V[s] = best\n        V = new_V\n    return V\n", "tests": [{"expr": "value_iteration(STUDY, 0.9, 0)", "expected": "[0.0, 0.0, 0.0]"}, {"expr": "value_iteration(STUDY, 0.9, 1)", "expected": "[1.0, 9.5, 0.0]"}, {"expr": "value_iteration(STUDY, 0.9, 2)", "expected": "[7.550000000000001, 13.775, 0.0]"}, {"expr": "value_iteration(M3, 0.9, 3)", "expected": "[10.0, 10.2, 8.0, 0.0]"}], "hints": ["`V = [0.0] * n`, then `for _ in range(k):` with a full sweep that fills `new_V` from the old `V`.", "`V = new_V` at the end of each iteration; `return V` after the loop."]}, {"t": "ex", "id": "d-pe", "title": "policy_evaluation(transitions, policy, gamma, k)", "task": "Start from all zeros, do `k` batch sweeps of V(s) = Q(s, policy[s]) (no max), return V.", "starter": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef policy_evaluation(transitions, policy, gamma, k):\n    pass\n", "solution": "def q_value(transitions, V, s, a, gamma):\n    total = 0.0\n    for prob, next_state, reward, terminal in transitions[s][a]:\n        future = 0.0 if terminal else V[next_state]\n        total += prob * (reward + gamma * future)\n    return total\n\ndef policy_evaluation(transitions, policy, gamma, k):\n    n = len(transitions)\n    V = [0.0] * n\n    for _ in range(k):\n        new_V = [0.0] * n\n        for s in range(n):\n            new_V[s] = q_value(transitions, V, s, policy[s], gamma)\n        V = new_V\n    return V\n", "tests": [{"expr": "policy_evaluation(STUDY, [1, 0, 0], 0.9, 2)", "expected": "[7.550000000000001, 13.775, 0.0]"}, {"expr": "policy_evaluation(STUDY, [0, 1, 0], 0.9, 2)", "expected": "[1.9, 0.9, 0.0]"}, {"expr": "policy_evaluation(M3, [0, 1, 0, 0], 0.9, 3)", "expected": "[7.1348, 5.9584, 3.9049999999999994, 0.0]"}], "hints": ["Value iteration without the action loop and max.", "`new_V[s] = q_value(transitions, V, s, policy[s], gamma)`"]}]}, {"id": "m6-rl", "part": 6, "title": "Exam mix: reinforcement learning", "blocks": [{"t": "p", "text": "All learning updates have the same shape: **old + α × (target − old)**. Terminal → target is just `r`."}, {"t": "ex", "id": "d-td", "title": "td_update(V, s, r, s2, alpha, gamma, terminal)", "task": "Update `V[s]` in place with the TD(0) rule and return the new `V[s]`.", "starter": "def td_update(V, s, r, s2, alpha, gamma, terminal):\n    pass\n", "solution": "def td_update(V, s, r, s2, alpha, gamma, terminal):\n    if terminal:\n        target = r\n    else:\n        target = r + gamma * V[s2]\n    V[s] = V[s] + alpha * (target - V[s])\n    return V[s]\n", "tests": [{"expr": "td_update([4.0, 6.0], 0, -1, 1, 0.5, 0.9, False)", "expected": "4.2"}, {"expr": "td_update([4.0, 6.0], 0, 5, 1, 0.5, 0.9, True)", "expected": "4.5"}, {"expr": "(lambda V: (td_update(V, 0, -1, 1, 0.5, 0.9, False), V))([4.0, 6.0])", "expected": "(4.2, [4.2, 6.0])"}], "hints": ["`target = r` if terminal else `r + gamma * V[s2]`.", "`V[s] = V[s] + alpha * (target - V[s])`, then `return V[s]`."]}, {"t": "ex", "id": "d-ql", "title": "q_learning_update(Q, s, a, r, s2, alpha, gamma, terminal)", "task": "Update `Q[s][a]` in place with the Q-learning rule and return the new value.", "starter": "def q_learning_update(Q, s, a, r, s2, alpha, gamma, terminal):\n    pass\n", "solution": "def q_learning_update(Q, s, a, r, s2, alpha, gamma, terminal):\n    if terminal:\n        target = r\n    else:\n        target = r + gamma * max(Q[s2])\n    Q[s][a] = Q[s][a] + alpha * (target - Q[s][a])\n    return Q[s][a]\n", "tests": [{"expr": "q_learning_update([[2.0, 0.0], [5.0, 1.0]], 0, 0, 3, 1, 0.25, 0.8, False)", "expected": "3.25"}, {"expr": "q_learning_update([[1.0, 2.0], [4.0, 3.0]], 0, 1, 1, 1, 0.5, 0.9, False)", "expected": "3.3"}, {"expr": "q_learning_update([[3.0]], 0, 0, 5, 0, 0.6, 0.8, True)", "expected": "4.2"}], "hints": ["Like `td_update` with `Q[s][a]` and `max(Q[s2])`.", "`target = r + gamma * max(Q[s2])` (or `r` if terminal)."]}, {"t": "ex", "id": "d-greedy-act", "title": "greedy_action(Q, s)", "task": "Return the index of the largest `Q[s][a]` (ties → lowest index).", "starter": "def greedy_action(Q, s):\n    pass\n", "solution": "def greedy_action(Q, s):\n    best_a = 0\n    for a in range(1, len(Q[s])):\n        if Q[s][a] > Q[s][best_a]:\n            best_a = a\n    return best_a\n", "tests": [{"expr": "greedy_action([[1.0, 5.0, 2.0]], 0)", "expected": "1"}, {"expr": "greedy_action([[1, 3, 3, 2]], 0)", "expected": "1"}, {"expr": "greedy_action([[0.0], [-1.0, -1.0]], 1)", "expected": "0"}], "hints": ["Index of max on the list `Q[s]`.", "`best_a = 0`, compare with strict `>`."]}, {"t": "ex", "id": "d-pgreedy", "title": "prob_greedy(epsilon, n_actions)", "task": "Return the probability that ε-greedy picks the greedy action: `1 - epsilon + epsilon / n_actions`.", "starter": "def prob_greedy(epsilon, n_actions):\n    pass\n", "solution": "def prob_greedy(epsilon, n_actions):\n    return 1 - epsilon + epsilon / n_actions\n", "tests": [{"expr": "prob_greedy(0.2, 4)", "expected": "0.8500000000000001"}, {"expr": "prob_greedy(0.0, 3)", "expected": "1.0"}, {"expr": "prob_greedy(1.0, 2)", "expected": "0.5"}], "hints": ["One line.", "`return 1 - epsilon + epsilon / n_actions`"]}, {"t": "ex", "id": "d-avg-q", "title": "average_q(Q, s)", "task": "Return the average of the values `Q[s][a]` over all actions of state `s`.", "starter": "def average_q(Q, s):\n    pass\n", "solution": "def average_q(Q, s):\n    total = 0.0\n    for q in Q[s]:\n        total += q\n    return total / len(Q[s])\n", "tests": [{"expr": "average_q([[1.0, 5.0, 3.0]], 0)", "expected": "3.0"}, {"expr": "average_q([[0.0], [-2.0, 4.0]], 1)", "expected": "1.0"}], "hints": ["Sum the row `Q[s]`, divide by its length.", "`return total / len(Q[s])`"]}]}], "setup": "\nEX = [\n    [  # state 0\n        [(0.8, 1, 2.0, False), (0.2, 2, 0.0, True)],   # action 0\n        [(1.0, 2, 4.0, True)],                          # action 1\n    ],\n    [  # state 1\n        [(1.0, 1, 0.0, True)],                          # action 0\n    ],\n    [  # state 2\n        [(1.0, 2, 0.0, True)],                          # action 0\n    ],\n]\nSTUDY = [\n    [[(1.0, 0, 1.0, False)],\n     [(1.0, 1, -1.0, False)]],\n    [[(0.5, 2, 20.0, True), (0.5, 1, -1.0, False)],\n     [(1.0, 0, 0.0, False)]],\n    [[(1.0, 2, 0.0, True)]],\n]\n\nM3 = [\n    [[(0.7, 1, 5.0, False), (0.3, 2, -1.0, False)],\n     [(1.0, 3, 10.0, True)],\n     [(0.5, 0, 0.0, False), (0.25, 1, 2.0, False), (0.25, 3, -4.0, True)]],\n    [[(1.0, 2, 3.0, False)],\n     [(0.6, 3, 8.0, True), (0.4, 1, -2.0, False)]],\n    [[(1.0, 0, -1.0, False), (0.0, 3, 100.0, True)]],\n    [[(1.0, 3, 0.0, True)]],\n]\n"}</script>
+<script>
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const PARTS = {
+  1:{name:"Part 1 · One action (1 loop)", desc:"You get s and a → loop over transitions[s][a].", c:"--p1"},
+  2:{name:"Part 2 · One state (2 loops)", desc:"You get s → loop over the actions of transitions[s], then their outcomes.", c:"--p2"},
+  3:{name:"Part 3 · Whole MDP (3 loops)", desc:"Only transitions → states → actions → outcomes.", c:"--p3"},
+  4:{name:"Part 4 · Lists of states & tables", desc:"Return state numbers (enumerate), flags, break, list of lists.", c:"--p4"},
+  5:{name:"Part 5 · Reward lists", desc:"Discounted returns, step numbers, walking backwards.", c:"--p5"},
+  6:{name:"Part 6 · Exam mix", desc:"Bellman backup, best action, value iteration, policy evaluation, TD, Q-learning.", c:"--p6"},
+};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+/* ---------- storage ---------- */
+const KEY = "f29ai-mockdrill-v1";
+let store = {passed:{}, code:{}};
+try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.passed) store = s; } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} }
+
+/* ---------- text + highlight ---------- */
+function inline(t){
+  const codes = [];
+  t = t.replace(/`([^`]+)`/g, (m, c) => { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; });
+  t = esc(t).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?!\w)/g, "$1<i>$2</i>");
+  return t.replace(/\u0000(\d+)\u0000/g, (m, i) => "<code>" + esc(codes[+i]) + "</code>");
+}
+function md(text){
+  const lines = text.split("\n"); let html = "", inList = false, para = [];
+  const flush = () => { if (para.length) { html += "<p>" + inline(para.join(" ")) + "</p>"; para = []; } };
+  for (const ln of lines){
+    if (ln.startsWith("- ")){ flush(); if (!inList){ html += "<ul>"; inList = true; } html += "<li>" + inline(ln.slice(2)) + "</li>"; }
+    else { if (inList){ html += "</ul>"; inList = false; } para.push(ln); }
+  }
+  flush(); if (inList) html += "</ul>";
+  return html;
+}
+const KW = new Set("def return for in if elif else while break continue and or not None True False import from lambda pass is as with try except".split(" "));
+const BI = new Set("print len range enumerate max min abs sorted set list dict sum reversed float int str tuple round zip".split(" "));
+function hl(code){
+  const re = /(#[^\n]*)|("(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*')|(\b\d+\.?\d*(?:e-?\d+)?\b)|([A-Za-z_]\w*)|([\s\S])/g;
+  let out = "", m, prevDef = false;
+  while ((m = re.exec(code))){
+    if (m[1]) out += '<span class="c">' + esc(m[1]) + "</span>";
+    else if (m[2]) out += '<span class="s">' + esc(m[2]) + "</span>";
+    else if (m[3]) out += '<span class="n">' + m[3] + "</span>";
+    else if (m[4]){
+      const w = m[4];
+      if (KW.has(w)) out += '<span class="k">' + w + "</span>";
+      else if (prevDef) out += '<span class="f">' + w + "</span>";
+      else if (BI.has(w)) out += '<span class="bi">' + w + "</span>";
+      else out += w;
+      prevDef = (w === "def");
+      continue;
+    } else out += esc(m[5]);
+    if (m[5] && /\S/.test(m[5])) prevDef = false;
+  }
+  return out;
+}
+
+/* ---------- editor ---------- */
+function makeEditor(host, initial, onChange, onRun){
+  host.innerHTML = '<pre aria-hidden="true"></pre><textarea spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off"></textarea>';
+  const pre = host.querySelector("pre"), ta = host.querySelector("textarea");
+  ta.value = initial;
+  const sync = () => {
+    pre.innerHTML = hl(ta.value) + "\n";
+    const lines = ta.value.split("\n").length;
+    ta.style.height = "auto";
+    ta.style.height = Math.max(ta.scrollHeight, (lines + 1) * 23.25 + 24) + "px";
+    const w = pre.scrollWidth;
+    ta.style.width = Math.max(host.clientWidth, w) + "px";
+  };
+  const insert = (text, delBefore = 0) => {
+    const s = ta.selectionStart, e = ta.selectionEnd;
+    ta.setRangeText(text, s - delBefore, e, "end");
+    sync(); onChange && onChange(ta.value);
+  };
+  ta.addEventListener("input", () => { sync(); onChange && onChange(ta.value); });
+  ta.addEventListener("keydown", ev => {
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter"){ ev.preventDefault(); onRun && onRun(); return; }
+    if (ev.key === "Tab"){
+      ev.preventDefault();
+      const s = ta.selectionStart, v = ta.value, ls = v.lastIndexOf("\n", s - 1) + 1;
+      if (ev.shiftKey){
+        if (v.slice(ls, ls + 4) === "    "){ ta.setRangeText("", ls, ls + 4, "preserve"); ta.selectionStart = ta.selectionEnd = Math.max(ls, s - 4); sync(); onChange && onChange(ta.value); }
+      } else insert("    ");
+      return;
+    }
+    if (ev.key === "Enter"){
+      ev.preventDefault();
+      const s = ta.selectionStart, v = ta.value, ls = v.lastIndexOf("\n", s - 1) + 1;
+      const line = v.slice(ls, s);
+      let ind = (line.match(/^ */) || [""])[0];
+      if (/:\s*(#.*)?$/.test(line)) ind += "    ";
+      if (/^\s*(return|pass|break|continue)\b/.test(line) && ind.length >= 4) ind = ind.slice(4);
+      insert("\n" + ind);
+      return;
+    }
+    if (ev.key === "Backspace" && ta.selectionStart === ta.selectionEnd){
+      const s = ta.selectionStart, v = ta.value, ls = v.lastIndexOf("\n", s - 1) + 1;
+      const before = v.slice(ls, s);
+      if (before.length >= 4 && /^ +$/.test(before) && before.length % 4 === 0){ ev.preventDefault(); ta.setRangeText("", s - 4, s, "end"); sync(); onChange && onChange(ta.value); }
+    }
+  });
+  new ResizeObserver(sync).observe(host);
+  sync();
+  return { get: () => ta.value, set: v => { ta.value = v; sync(); onChange && onChange(v); }, focus: () => ta.focus() };
+}
+
+/* ---------- diagnostics ---------- */
+const DIAG = [];
+const T0 = performance.now();
+function dlog(m){ DIAG.push(((performance.now() - T0) / 1000).toFixed(1) + "s  " + m); const d = $("diag"); if (d) d.textContent = DIAG.join("\n"); }
+document.addEventListener("securitypolicyviolation", e => dlog("CSP BLOCKED: " + e.violatedDirective + " -> " + e.blockedURI));
+window.addEventListener("error", e => dlog("JS error: " + (e.message || e.type) + (e.filename ? " @ " + e.filename.slice(-60) : "")), true);
+window.addEventListener("unhandledrejection", e => dlog("Unhandled: " + (e.reason && (e.reason.message || e.reason))));
+/* ---------- python engine (Skulpt, runs fully in the page) ---------- */
+const SK_BASE = "https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/";
+const SETUP = DATA.setup.endsWith("\n") ? DATA.setup : DATA.setup + "\n";
+const OFFSET = SETUP.split("\n").length - 1;
+let pyPromise = null;
+function setChip(cls, txt){ const c = $("pychip"); c.className = "chip " + cls; c.textContent = txt; }
+function loadScript(u){ return new Promise((res, rej) => { const s = document.createElement("script"); s.src = u; s.onload = res; s.onerror = () => rej(new Error("could not load " + u)); document.head.appendChild(s); }); }
+function getPy(){
+  if (pyPromise) return pyPromise;
+  dlog("loading Python engine");
+  pyPromise = (async () => {
+    if (!window.Sk) await loadScript(SK_BASE + "skulpt.min.js");
+    if (!window.Sk || !Sk.builtinFiles) await loadScript(SK_BASE + "skulpt-stdlib.js");
+    dlog("engine loaded");
+    setChip("ready", "Python ready ✓");
+    return true;
+  })().catch(e => { dlog("FAILED: " + e.message); setChip("fail", "Python failed: click"); pyPromise = null; throw e; });
+  return pyPromise;
+}
+function skRead(x){
+  if (Sk.builtinFiles === undefined || Sk.builtinFiles.files[x] === undefined) throw "File not found: '" + x + "'";
+  return Sk.builtinFiles.files[x];
+}
+async function runPy(prog){
+  let out = "";
+  Sk.configure({ output: t => { out += t; }, read: skRead, __future__: Sk.python3, execLimit: 4000, yieldLimit: null });
+  Sk.execStart = Date.now();
+  const t0 = Date.now();
+  await new Promise(r => setTimeout(r, 0));   // let the "Running…" message paint
+  try {
+    const mod = Sk.importMainWithBody("<stdin>", false, prog, false);
+    return { mod, out, ms: Date.now() - t0 };
+  } catch (err) {
+    if (Date.now() - t0 >= 3900) err = "TimeoutError: your code ran for too long (infinite loop?)";
+    return { err, out, ms: Date.now() - t0 };
+  }
+}
+const TIPS = {
+  NameError: "A name is not defined. Check spelling, and that the function name in your def line is exactly the one asked for.",
+  IndexError: "An index is outside the list. Remember: indexes start at 0, and the last index is len(lst) - 1.",
+  IndentationError: "Indentation problem. Lines inside def / for / if must be indented by 4 more spaces than the line with the colon.",
+  SyntaxError: "Python could not read your code. Look for a missing colon ':' at the end of def / for / if lines, or unclosed brackets.",
+  ZeroDivisionError: "You divided by zero. Guard the division with an if.",
+  KeyError: "That key is not in the dictionary. Use d.get(key, 0) when the key may be missing.",
+  TimeoutError: "Your code ran for too long. Is there an infinite loop (e.g. a while loop that never stops)?",
+};
+function tipFor(text){
+  const name = String(text).split(":")[0].trim();
+  if (name === "TypeError" && /NoneType/.test(text)) return "Something is None. A function that has no return statement gives back None.";
+  if (/unpack/.test(text)) return "The number of names on the left does not match the number of values. An MDP outcome has exactly 4 values: prob, next_state, reward, terminal. Also check you are unpacking at the right loop level.";
+  return TIPS[name] || "";
+}
+function fmtErr(err, code){
+  let s = String(err && err.toString ? err.toString() : err);
+  let line = null;
+  if (err && err.traceback && err.traceback.length){
+    for (const fr of err.traceback){ const l = fr.lineno - OFFSET; if (l >= 1 && l <= code.split("\n").length) line = l; }
+  }
+  s = s.replace(/ on line -?\d+/g, "");
+  if (/TimeoutError|exceeded run time/i.test(s)) s = "TimeoutError: your code ran for too long (infinite loop?)";
+  if (line !== null){ const src = (code.split("\n")[line - 1] || "").trim(); s += "\n  at line " + line + ":  " + src; }
+  return { error: s, tip: tipFor(s) };
+}
+const CLOSE_SRC = `
+def _h_close(a, b):
+    if isinstance(b, bool) or isinstance(a, bool):
+        return isinstance(a, bool) and isinstance(b, bool) and a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return abs(a - b) <= 1e-6 + 1e-9 * abs(b)
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        if len(a) != len(b):
+            return False
+        for _h_i in range(len(a)):
+            if not _h_close(a[_h_i], b[_h_i]):
+                return False
+        return True
+    if isinstance(a, dict) and isinstance(b, dict):
+        if len(a) != len(b):
+            return False
+        for _h_k in b:
+            if _h_k not in a:
+                return False
+            if not _h_close(a[_h_k], b[_h_k]):
+                return False
+        return True
+    return a == b
+
+def _h_note(g, e):
+    if _h_close(g, e):
+        return ""
+    if g is None and e is not None:
+        return "Your function returned None. Did you forget return (or is return inside an if that did not run)?"
+    if isinstance(e, bool) and not isinstance(g, bool):
+        return "Expected True or False."
+    if isinstance(e, (list, tuple)) and isinstance(g, (list, tuple)) and len(g) != len(e):
+        return "Wrong length: expected " + str(len(e)) + " items, got " + str(len(g)) + "."
+    return ""
+
+_h_results = []
+`;
+function buildCheck(code, tests){
+  let f = CLOSE_SRC;
+  for (const t of tests){
+    f += "try:\n    _h_g = (" + t.expr + ")\n    _h_e = (" + t.expected + ")\n    _h_results.append([_h_close(_h_g, _h_e), repr(_h_g), _h_note(_h_g, _h_e)])\n" +
+         "except Exception as _h_x:\n    _h_results.append([False, 'ERROR ' + type(_h_x).__name__ + ': ' + str(_h_x), ''])\n";
+  }
+  return SETUP + code + "\n" + f;
+}
+async function pyCall(fn, code, tests){
+  await getPy();
+  if (fn === "play"){
+    const r = await runPy(SETUP + code + "\n");
+    if (r.err){ const e = fmtErr(r.err, code); return { stdout: r.out, error: e.error, tip: e.tip }; }
+    return { stdout: r.out, error: null, tip: "" };
+  }
+  tests = JSON.parse(tests);
+  // 1) run the user's code alone (clear errors with line numbers)
+  const r0 = await runPy(SETUP + code + "\n");
+  if (r0.err){ const e = fmtErr(r0.err, code); return { error: e.error, tip: e.tip, results: [], stdout: r0.out }; }
+  // 2) run the tests
+  const r = await runPy(buildCheck(code, tests));
+  if (r.err){ const e = fmtErr(r.err, code); return { error: e.error, tip: e.tip, results: [], stdout: r.out }; }
+  const raw = Sk.ffi.remapToJs(r.mod.$d._h_results);
+  if (r.ms >= 3900) return { error: "TimeoutError: your code ran for too long (infinite loop?)", tip: TIPS.TimeoutError, results: [], stdout: r.out.slice(-2000) };
+  const results = tests.map((t, i) => {
+    const x = raw[i] || [false, "(no result)", ""];
+    let got = String(x[1]), note = x[2] || "";
+    if (got.startsWith("ERROR ")){ got = got.slice(6); note = tipFor(got); }
+    return { expr: t.expr, expected: t.expected, got, pass: x[0] === true, note };
+  });
+  return { error: null, tip: "", results, stdout: r.out.slice(-2000) };
+}
+
+/* self-test: open the page with #selftest */
+async function runSelfTest(){
+  $("diag").classList.add("show");
+  dlog("SELFTEST start");
+  let bad = 0, n = 0;
+  for (const id of Object.keys(exIndex)){
+    const ex = exIndex[id].ex; n++;
+    const a = await pyCall("check", ex.solution, JSON.stringify(ex.tests));
+    const okSol = !a.error && a.results.every(r => r.pass);
+    const b = await pyCall("check", ex.starter, JSON.stringify(ex.tests));
+    const okStart = !b.error && b.results.length && b.results.every(r => r.pass);
+    if (!okSol || okStart){
+      bad++;
+      dlog("PROBLEM " + id + (okSol ? "" : " solution: " + (a.error || JSON.stringify(a.results.filter(r => !r.pass).map(r => [r.expr, r.expected, r.got])))) + (okStart ? " starter passes" : ""));
+    }
+  }
+  dlog("SELFTEST done: " + n + " exercises, " + bad + " problems");
+  const p = await pyCall("play", "print(len(EX))\nfor i in range(3):\n    print(i * 0.1)\nprint(repr(7.550000000000001), 1/3, 2**10, [1.0, 2.5])\n");
+  dlog("play: " + JSON.stringify(p));
+  const loop = await pyCall("check", "def total(lst):\n    while True:\n        pass\n", JSON.stringify([{expr: "total([1])", expected: "1"}]));
+  dlog("loop: " + JSON.stringify(loop).slice(0, 300));
+  const syn = await pyCall("check", "def sign(x)\n    return 1\n", "[]");
+  dlog("syntax: " + JSON.stringify(syn).slice(0, 300));
+  const rt = await pyCall("check", "def f(x):\n    y = x[5]\n    return y\nf([1])\n", "[]");
+  dlog("runtime: " + JSON.stringify(rt).slice(0, 300));
+}
+
+/* ---------- build page ---------- */
+const exIndex = {};      // id -> {ex, el, lessonId, part}
+const lessonEx = {};     // lessonId -> [ids]
+function render(){
+  const content = $("content"), nav = $("nav");
+  let curPart = 0, navHtml = "";
+  for (const L of DATA.lessons){
+    const P = PARTS[L.part];
+    if (L.part !== curPart){
+      curPart = L.part;
+      const h = document.createElement("div");
+      h.className = "parthead"; h.id = "part-" + L.part;
+      h.style.background = `linear-gradient(110deg, var(${P.c}), color-mix(in srgb, var(${P.c}) 70%, #ffffff))`;
+      h.innerHTML = `<h2>${esc(P.name)}</h2><p>${esc(P.desc)}</p>`;
+      content.appendChild(h);
+      navHtml += `<h4 style="color:var(${P.c})">${esc(P.name)}</h4>`;
+    }
+    const sec = document.createElement("section");
+    sec.className = "lesson"; sec.id = L.id;
+    sec.style.setProperty("--pc", `var(${P.c})`);
+    sec.style.setProperty("--pcl", `var(${P.c}l)`);
+    sec.innerHTML = `<h3><span class="tag">Part ${L.part}</span>${esc(L.title)}</h3>`;
+    lessonEx[L.id] = [];
+    for (const b of L.blocks){
+      if (b.t === "p"){ const d = document.createElement("div"); d.innerHTML = md(b.text); sec.appendChild(d); }
+      else if (b.t === "tip" || b.t === "warn"){ const d = document.createElement("div"); d.className = b.t; d.innerHTML = inline(b.text); sec.appendChild(d); }
+      else if (b.t === "code"){ sec.appendChild(exampleEl(b)); }
+      else if (b.t === "ex"){ sec.appendChild(exerciseEl(b, L)); lessonEx[L.id].push(b.id); }
+    }
+    content.appendChild(sec);
+    navHtml += `<a href="#${L.id}" data-l="${L.id}"><span>${esc(L.title)}</span><small></small></a>`;
+  }
+  nav.innerHTML = navHtml;
+  nav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => nav.classList.remove("show")));
+  updateProgress();
+}
+
+function exampleEl(b){
+  const d = document.createElement("div"); d.className = "example";
+  const hasOut = b.output && b.output.length;
+  d.innerHTML = `<div class="src"><pre class="hl">${hl(b.code)}</pre></div>
+    <div class="bar2"><span class="lbl">${hasOut ? "example" : "pattern"}</span>
+    ${hasOut ? '<button class="b ghost so">👁 Show output</button>' : ""}
+    ${hasOut ? '<button class="b ghost tp">🧪 Try in playground</button>' : ""}</div>
+    ${hasOut ? `<div class="out">${esc(b.output.replace(/\n$/, ""))}</div>` : ""}`;
+  if (hasOut){
+    const btn = d.querySelector(".so"), out = d.querySelector(".out");
+    btn.onclick = () => { out.classList.toggle("show"); btn.textContent = out.classList.contains("show") ? "🙈 Hide output" : "👁 Show output"; };
+  }
+  const tp = d.querySelector(".tp"); if (tp) tp.onclick = () => openPlayground(b.code);
+  return d;
+}
+
+function exerciseEl(ex, L){
+  const d = document.createElement("div"); d.className = "ex"; d.id = ex.id;
+  d.innerHTML = `<div class="exhead"><span class="yt">✍️ Your turn</span><h5>${esc(ex.title)}</h5><span class="badge">not done</span></div>
+    <div class="task">${md(ex.task)}</div>
+    <div class="editor"></div>
+    <div class="btns">
+      <button class="b check">▶ Check</button>
+      <button class="b hint h1b">💡 Hint 1</button>
+      <button class="b hint h2b">💡 Hint 2</button>
+      <button class="b sol">👀 Solution</button>
+      <button class="b reset">↺ Reset</button>
+      <span class="kbd">Ctrl / Cmd + Enter = Check</span>
+    </div>
+    <div class="reveal h h1">${inline(ex.hints[0] || "")}</div>
+    <div class="reveal h h2">${inline(ex.hints[1] || "")}</div>
+    <div class="reveal solb"><div class="t"><span>Model solution: read it, then close it and type it yourself</span><button class="b ghost cp">Copy into editor</button></div><pre class="hl">${hl(ex.solution)}</pre></div>
+    <div class="results"></div>`;
+  const ed = makeEditor(d.querySelector(".editor"), store.code[ex.id] ?? ex.starter,
+    v => { store.code[ex.id] = v; saveSoon(); }, () => check());
+  const res = d.querySelector(".results");
+  const toggle = (sel, btn, on, off) => { const r = d.querySelector(sel); r.classList.toggle("show"); btn.textContent = r.classList.contains("show") ? off : on; };
+  const h1b = d.querySelector(".h1b"), h2b = d.querySelector(".h2b"), solb = d.querySelector(".sol");
+  h1b.onclick = () => toggle(".h1", h1b, "💡 Hint 1", "💡 Hide hint 1");
+  h2b.onclick = () => toggle(".h2", h2b, "💡 Hint 2", "💡 Hide hint 2");
+  let solArmed = false;
+  solb.onclick = () => {
+    const r = d.querySelector(".solb");
+    if (r.classList.contains("show")){ r.classList.remove("show"); solb.textContent = "👀 Solution"; return; }
+    if (!solArmed && !store.passed[ex.id]){ solArmed = true; solb.textContent = "Sure? Try the hints first. Click again"; return; }
+    r.classList.add("show"); solb.textContent = "👀 Hide solution"; solArmed = false;
+  };
+  d.querySelector(".cp").onclick = () => { ed.set(ex.solution); };
+  const rb = d.querySelector(".reset"); let resetArmed = false;
+  rb.onclick = () => {
+    if (!resetArmed){ resetArmed = true; rb.textContent = "Click again to reset"; setTimeout(() => { resetArmed = false; rb.textContent = "↺ Reset"; }, 2500); return; }
+    resetArmed = false; rb.textContent = "↺ Reset"; ed.set(ex.starter); res.innerHTML = "";
+  };
+  async function check(){
+    res.innerHTML = `<div class="sum wait">⏳ Running your code…${pyPromise ? "" : " (loading Python…)"}</div>`;
+    let r;
+    try { r = await pyCall("check", ed.get(), JSON.stringify(ex.tests)); }
+    catch (e) { res.innerHTML = `<div class="sum bad">Python could not load. Check your internet connection and reload the page.</div>`; return; }
+    showResult(r);
+  }
+  function showResult(r){
+    let html = "";
+    if (r.error){
+      html += `<div class="sum bad">❌ Your code has an error</div><div class="errbox">${esc(r.error)}</div>`;
+      if (r.tip) html += `<div class="errtip">${esc(r.tip)}</div>`;
+    } else {
+      const n = r.results.length, ok = r.results.filter(x => x.pass).length;
+      const all = ok === n;
+      html += `<div class="sum ${all ? "ok" : "bad"}">${all ? "✅ All " + n + " tests passed!" : "❌ " + ok + " of " + n + " tests passed"}</div>`;
+      if (all) html += `<div class="party">${["🎉 Great job!", "🔥 Nice, keep going!", "💪 Correct!", "⭐ Perfect!", "🚀 You've got it!"][Math.floor(Math.random() * 5)]}</div>`;
+      html += `<table class="t">` + r.results.map(x => `<tr class="${x.pass ? "p" : "f"}"><td>${x.pass ? "✓" : "✗"}</td><td>
+        <div class="lab">test</div><div class="m">${esc(x.expr)}</div></td><td><div class="lab">expected</div><div class="m">${esc(x.expected)}</div></td>
+        <td><div class="lab">got</div><div class="m">${esc(x.got)}</div>${x.note ? `<div class="note">${esc(x.note)}</div>` : ""}</td></tr>`).join("") + `</table>`;
+      if (all && !store.passed[ex.id]){ store.passed[ex.id] = 1; save(); updateProgress(); }
+    }
+    if (r.stdout) html += `<div class="stdout">${esc(r.stdout)}</div>`;
+    res.innerHTML = html;
+  }
+  d.querySelector(".check").onclick = check;
+  exIndex[ex.id] = { ex, el: d, lessonId: L.id };
+  return d;
+}
+
+let saveT = null;
+function saveSoon(){ clearTimeout(saveT); saveT = setTimeout(save, 400); }
+
+function updateProgress(){
+  const all = Object.keys(exIndex), done = all.filter(id => store.passed[id]).length;
+  $("barfill").style.width = (all.length ? 100 * done / all.length : 0) + "%";
+  $("progtxt").textContent = `${done} / ${all.length} done`;
+  for (const id of all) exIndex[id].el.classList.toggle("passed", !!store.passed[id]);
+  for (const id of all) exIndex[id].el.querySelector(".badge").textContent = store.passed[id] ? "✓ passed" : "not done";
+  document.querySelectorAll("nav a").forEach(a => {
+    const ids = lessonEx[a.dataset.l] || [], d2 = ids.filter(i => store.passed[i]).length;
+    a.querySelector("small").textContent = ids.length ? (d2 === ids.length ? "✓ " : "") + d2 + "/" + ids.length : "";
+    a.classList.toggle("done", ids.length > 0 && d2 === ids.length);
+  });
+}
+
+/* ---------- playground ---------- */
+let pgEd = null;
+function openPlayground(code){
+  $("pg").classList.add("show");
+  if (code !== undefined) pgEd.set(code);
+  pgEd.focus();
+}
+async function runPlay(){
+  const out = $("pgout");
+  out.innerHTML = `<div class="sum wait">⏳ Running…</div>`;
+  let r;
+  try { r = await pyCall("play", pgEd.get()); }
+  catch (e) { out.innerHTML = `<div class="sum bad">Python could not load.</div>`; return; }
+  let html = r.stdout ? `<div class="stdout">${esc(r.stdout)}</div>` : (r.error ? "" : `<div class="sum wait">No output. Use print(...) to show values.</div>`);
+  if (r.error){ html += `<div class="errbox">${esc(r.error)}</div>`; if (r.tip) html += `<div class="errtip">${esc(r.tip)}</div>`; }
+  out.innerHTML = html;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+  const ref = document.getElementById("mdpref"); if (ref) ref.innerHTML = hl(DATA.setup.trim());
+  pgEd = makeEditor($("pgeditor"), store.play ?? "# Try anything here\nprint(len(M3))\nprint(M3[0][2])\n", v => { store.play = v; saveSoon(); }, runPlay);
+  $("pgbtn").onclick = () => $("pg").classList.contains("show") ? $("pg").classList.remove("show") : openPlayground();
+  $("pgrun").onclick = runPlay;
+  $("pgclear").onclick = () => { pgEd.set(""); $("pgout").innerHTML = ""; };
+  $("menu").onclick = () => $("nav").classList.toggle("show");
+  $("pychip").onclick = () => $("diag").classList.toggle("show");
+  $("pychip").ondblclick = () => getPy().then(runSelfTest);
+  window.addEventListener("hashchange", () => { if (location.hash === "#selftest") getPy().then(runSelfTest); });
+  if (location.hash){ const t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(() => t.scrollIntoView(), 50); }
+  getPy().then(() => { if (location.hash === "#selftest") runSelfTest(); }).catch(e => { $("diag").classList.add("show"); });
+});
+</script>
+</body>
+</html>
