@@ -35,6 +35,10 @@ Three example MDPs (`EX`, `STUDY`, `M3`) are pre-loaded in every task and in the
 
 Each check shows every test case with the expected and actual value, and explains common mistakes (missing `return`, missing `:`, index out of range, unpacking at the wrong level, infinite loops).
 
+## My solutions
+
+My own solutions to the tasks I have completed so far are in [`my-solutions/`](my-solutions/).
+
 ## How it works
 
 - `index.html` is a single self-contained page. Python runs in the browser with [Skulpt](https://skulpt.org), loaded from the jsDelivr CDN, so an internet connection is needed.
